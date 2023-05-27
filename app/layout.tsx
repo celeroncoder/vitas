@@ -1,7 +1,7 @@
+import { inter } from "@/lib/fonts";
 import "./globals.css";
-import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"] });
+import { ClerkProvider } from "@clerk/nextjs";
+import { neobrutalism } from "@clerk/themes";
 
 export const metadata = {
   title: "getid",
@@ -15,7 +15,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <ClerkProvider
+        appearance={{
+          baseTheme: neobrutalism,
+          variables: { colorPrimary: "#8b5cf6" },
+        }}
+      >
+        <body className={inter.className}>{children}</body>
+      </ClerkProvider>
     </html>
   );
 }
