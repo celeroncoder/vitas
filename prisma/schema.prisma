@@ -13,4 +13,21 @@ datasource db {
 
 model Project {
     id String @id @default(cuid())
+
+    name        String @unique
+    displayName String
+    displayUrl  String
+
+    members Members[]
+}
+
+model Members {
+    id Int @id @default(autoincrement())
+
+    name     String @db.Char(20)
+    username String @db.Char(10)
+    position String @db.Char(20)
+
+    project   Project @relation(references: [id], fields: [projectId], onDelete: Cascade)
+    projectId String
 }
