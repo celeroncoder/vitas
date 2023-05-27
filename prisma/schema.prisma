@@ -14,9 +14,11 @@ datasource db {
 model Project {
     id String @id @default(cuid())
 
-    name        String @unique
+    userId String
+
+    name        String  @unique
     displayName String
-    displayUrl  String
+    displayUrl  String?
 
     members Members[]
 }
