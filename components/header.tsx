@@ -1,7 +1,7 @@
-import { space_grotesk } from "@/lib/fonts";
 import { UserButton } from "@clerk/nextjs";
 import { neobrutalism } from "@clerk/themes";
 import Link from "next/link";
+import { Title } from "./ui/title";
 
 export const Header = () => {
   return (
@@ -10,12 +10,9 @@ export const Header = () => {
         href="/dashboard"
         className="px-4 py-1 bg-lime-200 rounded-full border-[2.5px] border-b-[5px] border-r-[5px] border-black"
       >
-        <h1
-          style={space_grotesk.style}
-          className="text-xl tracking-tighter leading-tight font-bold"
-        >
+        <Title className="text-xl tracking-tighter leading-tight font-bold">
           get.id
-        </h1>
+        </Title>
       </Link>
       <UserButton
         appearance={{
