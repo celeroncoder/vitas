@@ -6,6 +6,7 @@ import { neobrutalism } from "@clerk/themes";
 export const metadata = {
   title: "getid",
   description: "Generate ID Cards for your Team",
+  icons: "/favicon.ico",
 };
 
 export default function RootLayout({
@@ -18,10 +19,10 @@ export default function RootLayout({
       <ClerkProvider
         appearance={{
           baseTheme: neobrutalism,
-          variables: { colorPrimary: "#8b5cf6" },
+          variables: { colorPrimary: "#a3e635" },
         }}
       >
-        <body className={inter.className}>{children}</body>
+        <body style={inter.style}>{children}</body>
       </ClerkProvider>
     </html>
   );

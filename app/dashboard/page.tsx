@@ -1,3 +1,9 @@
+import { Header } from "@/components/header";
+
 export default function Dashboard() {
-  return <main>dashboard</main>;
+  return (
+    <main className="min-h-screen bg-background w-full">
+      <Header />
+    </main>
+  );
 }
