@@ -1,7 +1,6 @@
 import { Project } from "@prisma/client";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -14,7 +13,7 @@ import { ChevronRight } from "lucide-react";
 
 const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
   return (
-    <Card className="shadow-sm hover:shadow-lg duration-300 w-full sm:w-fit md:w-fit lg:w-fit border-muted-foreground border-2">
+    <Card className="border-2 shadow-sm hover:shadow-lg duration-300 w-full sm:w-72 md:w-72 lg:w-72">
       <CardHeader>
         <CardTitle className="select-none">{project.name}</CardTitle>
         <CardDescription>
