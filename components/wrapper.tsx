@@ -6,7 +6,12 @@ export const Wrapper: React.FC<{
   className?: string;
 }> = ({ children, className }) => {
   return (
-    <main className={cn("min-h-screen bg-background w-full", className)}>
+    <main
+      className={cn(
+        "min-h-screen bg-background w-full flex flex-col",
+        className
+      )}
+    >
       <Header />
       {children}
     </main>

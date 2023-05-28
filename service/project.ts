@@ -7,6 +7,10 @@ async function getAll(userId: string): Promise<Project[]> {
   return await prisma.project.findMany({ where: { userId } });
 }
 
+async function getOne(id: string): Promise<Project | null> {
+  return await prisma.project.findUnique({ where: { id } });
+}
+
 async function create(
   project: z.infer<typeof ProjectCreateProps>
 ): Promise<[boolean, Project | unknown]> {
@@ -25,4 +29,5 @@ async function create(
 export const project = {
   getAll,
   create,
+  getOne,
 };
