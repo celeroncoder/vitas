@@ -13,8 +13,8 @@ export default async function handler(
         const parsedBody = ProjectCreateProps.parse(req.body);
         const newProject = await service.project.create(parsedBody);
 
-        if (newProject) {
-          res.status(201).json({ ...newProject, error: undefined });
+        if (newProject[0]) {
+          res.status(201).json({ ...newProject[1]!, error: undefined });
         } else
           res.status(500).json({
             error: "Uh Oh! Some error occurred while creating project.",

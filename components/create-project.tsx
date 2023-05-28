@@ -60,7 +60,7 @@ export const CreateProject = () => {
             "Uh Oh! Some problem Occurred while creating the project",
         });
     } else {
-      console.log({
+      toast({
         title: "Please Provide Correct Data",
         description:
           "Invalid Details for the project Provided, please change them",
