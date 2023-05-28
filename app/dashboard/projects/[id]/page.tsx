@@ -1,4 +1,7 @@
+import { AddMember } from "@/components/add-member";
 import { Sidebar } from "@/components/sidebar";
+import { Separator } from "@/components/ui/separator";
+import { Title } from "@/components/ui/title";
 import { Wrapper } from "@/components/wrapper";
 import { service } from "@/service";
 import Link from "next/link";
@@ -32,6 +35,18 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     <Wrapper>
       <div className="flex w-full flex-1">
         <Sidebar />
+        <main className="flex-1 px-4">
+          <div className="w-full flex items-center justify-between py-2 my-4">
+            <div>
+              <p className="text-sm text-muted-foreground">
+                Project: "{project.name}"
+              </p>
+              <Title className="text-2xl">Your Members</Title>
+            </div>
+            <AddMember project={project} />
+          </div>
+          <Separator />
+        </main>
       </div>
     </Wrapper>
   );

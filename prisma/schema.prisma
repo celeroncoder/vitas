@@ -20,16 +20,18 @@ model Project {
     displayName String
     displayUrl  String?
 
-    members Members[]
+    members Member[]
 }
 
-model Members {
+model Member {
     id Int @id @default(autoincrement())
 
-    name     String @db.Char(20)
-    username String @db.Char(10)
-    position String @db.Char(20)
+    name     String
+    username String
+    position String
 
     project   Project @relation(references: [id], fields: [projectId], onDelete: Cascade)
     projectId String
+
+    @@map("Members")
 }

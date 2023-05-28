@@ -12,58 +12,62 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { useState } from "react";
-import { useAuth } from "@clerk/nextjs";
 import { Button, buttonVariants } from "./ui/button";
-import { ProjectCreateProps } from "@/lib/validators";
+import { MemeberCreateProps } from "@/lib/validators";
 import { api } from "@/lib/axios";
 import { useToast } from "./ui/use-toast";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Project } from "@prisma/client";
+import z from "zod";
 
-export const CreateProject = () => {
+export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
   const [open, setOpen] = useState(false);
-  const { userId } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [name, setName] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [displayUrl, setDisplayUrl] = useState("");
+  const [username, setUsername] = useState("");
+  const [position, setPosition] = useState("");
 
   const reset = () => {
     setName("");
-    setDisplayName("");
-    setDisplayUrl("");
+    setUsername("");
+    setPosition("");
   };
 
   const { toast } = useToast();
 
   const create = async () => {
-    const payload = ProjectCreateProps.safeParse({
+    setIsLoading(true);
+    const member: z.infer<typeof MemeberCreateProps> = {
       name,
-      displayName,
-      displayUrl,
-      userId: userId!,
-    });
+      username,
+      position,
+      projectId: project.id,
+    };
+    const payload = MemeberCreateProps.safeParse(member);
 
     if (payload.success) {
-      const res = await api.post("/projects/create", payload.data);
+      const res = await api.post("/members/create", payload.data);
+
       if (res.status == 201) {
+        setIsLoading(false);
         reset();
         toast({
-          title: `Project ${res.data.name} Created!`,
-          description: `Project ${res.data.name} with Display Name ${res.data.displayName} was created successfully!`,
+          title: `Member @${res.data.username} Added!`,
+          description: `${res.data.name} was added successfully!`,
         });
         setOpen(false);
       } else
         toast({
           title: "Some Error Occurred!",
-          description:
-            "Uh Oh! Some problem Occurred while creating the project",
+          description: "Uh Oh! Some problem Occurred while adding the member",
         });
     } else {
       toast({
         title: "Please Provide Correct Data",
         description:
-          "Invalid Details for the project Provided, please change them",
+          "Invalid Details for the member provided, please change them.",
       });
     }
   };
@@ -79,12 +83,14 @@ export const CreateProject = () => {
           })
         )}
       >
-        <Plus className="w-4 mr-2" /> Create Project
+        <Plus className="w-4 mr-2" /> Add Member
       </SheetTrigger>
       <SheetContent size={window.screen.width <= 640 ? "full" : "lg"}>
         <SheetHeader>
-          <SheetTitle>Create Project</SheetTitle>
-          <SheetDescription>Create a new project</SheetDescription>
+          <SheetTitle>Add Member</SheetTitle>
+          <SheetDescription>
+            Add a new member to {project.name}
+          </SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-col gap-4 py-2">
@@ -98,19 +104,19 @@ export const CreateProject = () => {
           </div>
 
           <div className="flex flex-col gap-1">
-            <Label className="">Display Name</Label>
+            <Label className="">Username</Label>
             <Input
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className=""
             />
           </div>
 
           <div className="flex flex-col gap-1">
-            <Label className="">Display URL</Label>
+            <Label className="">Position</Label>
             <Input
-              value={displayUrl}
-              onChange={(e) => setDisplayUrl(e.target.value)}
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
               className=""
             />
           </div>
@@ -119,7 +125,10 @@ export const CreateProject = () => {
             <Button variant={"secondary"} onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={create}>Create</Button>
+            <Button onClick={create} disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isLoading ? "Please Wait" : "Add"}
+            </Button>
           </SheetFooter>
         </div>
       </SheetContent>
