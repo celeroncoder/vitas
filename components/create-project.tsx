@@ -17,11 +17,13 @@ import { Button, buttonVariants } from "./ui/button";
 import { ProjectCreateProps } from "@/lib/validators";
 import { api } from "@/lib/axios";
 import { useToast } from "./ui/use-toast";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const CreateProject = () => {
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const { userId } = useAuth();
 
   const [name, setName] = useState("");
@@ -37,6 +39,7 @@ export const CreateProject = () => {
   const { toast } = useToast();
 
   const create = async () => {
+    setIsLoading(true);
     const payload = ProjectCreateProps.safeParse({
       name,
       displayName,
@@ -66,6 +69,8 @@ export const CreateProject = () => {
           "Invalid Details for the project Provided, please change them",
       });
     }
+
+    setIsLoading(false);
   };
 
   return (
@@ -119,7 +124,10 @@ export const CreateProject = () => {
             <Button variant={"secondary"} onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={create}>Create</Button>
+            <Button onClick={create} disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isLoading ? "Please Wait" : "Create"}
+            </Button>
           </SheetFooter>
         </div>
       </SheetContent>

@@ -37,7 +37,7 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
 
   const { toast } = useToast();
 
-  const create = async () => {
+  const add = async () => {
     setIsLoading(true);
     const member: z.infer<typeof MemeberCreateProps> = {
       name,
@@ -51,7 +51,6 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
       const res = await api.post("/members/create", payload.data);
 
       if (res.status == 201) {
-        setIsLoading(false);
         reset();
         toast({
           title: `Member @${res.data.username} Added!`,
@@ -70,6 +69,8 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
           "Invalid Details for the member provided, please change them.",
       });
     }
+
+    setIsLoading(false);
   };
 
   return (
@@ -125,7 +126,7 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
             <Button variant={"secondary"} onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={create} disabled={isLoading}>
+            <Button onClick={add} disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? "Please Wait" : "Add"}
             </Button>
