@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { service } from "@/service";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -9,9 +9,7 @@ export default async function handler(
 ) {
   const { userId } = getAuth(req);
   if (userId) {
-    const projects = await prisma.project.findMany({
-      where: { userId: userId },
-    });
+    const projects = await service.project.getAll(userId);
 
     if (projects) res.json(projects);
     else

@@ -15,7 +15,7 @@ import { Label } from "./ui/label";
 import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { Button } from "./ui/button";
-import { ProjectCreateRequest } from "@/lib/validators";
+import { ProjectCreateProps } from "@/lib/validators";
 import { api } from "@/lib/axios";
 import { useToast } from "./ui/use-toast";
 
@@ -38,7 +38,7 @@ export const CreateProject: React.FC<{ trigger: React.ReactNode }> = ({
   const { toast } = useToast();
 
   const create = async () => {
-    const payload = ProjectCreateRequest.safeParse({
+    const payload = ProjectCreateProps.safeParse({
       name,
       displayName,
       displayUrl,

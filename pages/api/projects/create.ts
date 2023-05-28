@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/db";
-import { ProjectCreateRequest } from "@/lib/validators";
+import { ProjectCreateProps } from "@/lib/validators";
+import { service } from "@/service";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -10,13 +10,11 @@ export default async function handler(
   if (req.method == "POST") {
     if (req.body) {
       try {
-        const parsedBody = ProjectCreateRequest.parse(req.body);
-        const project = await prisma.project.create({
-          data: { ...parsedBody },
-        });
+        const parsedBody = ProjectCreateProps.parse(req.body);
+        const newProject = await service.project.create(parsedBody);
 
-        if (project) {
-          res.status(201).json({ ...project, error: undefined });
+        if (newProject) {
+          res.status(201).json({ ...newProject, error: undefined });
         } else
           res.status(500).json({
             error: "Uh Oh! Some error occurred while creating project.",
