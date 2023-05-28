@@ -23,8 +23,10 @@ export default function RootLayout({
           variables: { colorPrimary: "#a3e635" },
         }}
       >
-        <body style={inter.style}>{children}</body>
-        <Toaster />
+        <body style={inter.style}>
+          {children}
+          <Toaster />
+        </body>
       </ClerkProvider>
     </html>
   );
