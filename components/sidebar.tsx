@@ -31,7 +31,7 @@ export const Sidebar = () => {
   const links = generateLinks(params!.id as string);
 
   return (
-    <div className="w-16 md:w-48 lg:w-48 border-r-2 border-black flex flex-col gap-2 p-2 duration-300">
+    <div className="select-none w-16 md:w-48 lg:w-48 border-r-2 border-black flex flex-col gap-2 p-2 duration-300">
       {links.map((link) => (
         <Link
           key={link.label}
