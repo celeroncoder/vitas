@@ -19,7 +19,7 @@ export default async function Dashboard() {
         </Title>
         <CreateProject
           trigger={
-            <Button className="group">
+            <Button className="group shadow-sm hover:shadow-lg duration-300">
               <Plus className="w-4 mr-2" /> Create Project
             </Button>
           }

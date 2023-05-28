@@ -7,7 +7,6 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetClose,
   SheetFooter,
 } from "@/components/ui/sheet";
 import { Input } from "./ui/input";
@@ -72,7 +71,7 @@ export const CreateProject: React.FC<{ trigger: React.ReactNode }> = ({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger>{trigger}</SheetTrigger>
-      <SheetContent>
+      <SheetContent size={"full"}>
         <SheetHeader>
           <SheetTitle>Create Project</SheetTitle>
           <SheetDescription>Create a new project</SheetDescription>
@@ -106,10 +105,10 @@ export const CreateProject: React.FC<{ trigger: React.ReactNode }> = ({
             />
           </div>
 
-          <SheetFooter>
-            <SheetClose>
-              <Button variant={"secondary"}>Cancel</Button>
-            </SheetClose>
+          <SheetFooter className="gap-1">
+            <Button variant={"secondary"} onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
             <Button onClick={create}>Create</Button>
           </SheetFooter>
         </div>
