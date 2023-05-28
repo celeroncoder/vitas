@@ -17,13 +17,7 @@ export default async function Dashboard() {
         <Title className="text-2xl font-bold tracking-tighter">
           Your Projects
         </Title>
-        <CreateProject
-          trigger={
-            <Button className="group shadow-sm hover:shadow-lg duration-300">
-              <Plus className="w-4 mr-2" /> Create Project
-            </Button>
-          }
-        />
+        <CreateProject />
       </div>
       {projects && <ProjectGrid projects={projects} />}
     </Wrapper>

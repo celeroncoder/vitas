@@ -13,14 +13,14 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { ProjectCreateProps } from "@/lib/validators";
 import { api } from "@/lib/axios";
 import { useToast } from "./ui/use-toast";
+import { Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export const CreateProject: React.FC<{ trigger: React.ReactNode }> = ({
-  trigger,
-}) => {
+export const CreateProject = () => {
   const [open, setOpen] = useState(false);
   const { userId } = useAuth();
 
@@ -70,7 +70,14 @@ export const CreateProject: React.FC<{ trigger: React.ReactNode }> = ({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger>{trigger}</SheetTrigger>
+      <SheetTrigger
+        className={cn(
+          "group shadow-sm hover:shadow-lg duration-300",
+          buttonVariants({ variant: "default" })
+        )}
+      >
+        <Plus className="w-4 mr-2" /> Create Project
+      </SheetTrigger>
       <SheetContent size={"full"}>
         <SheetHeader>
           <SheetTitle>Create Project</SheetTitle>
