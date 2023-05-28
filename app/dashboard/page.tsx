@@ -1,11 +1,9 @@
 import { CreateProject } from "@/components/create-project";
 import { ProjectGrid } from "@/components/project-grid";
-import { Button } from "@/components/ui/button";
 import { Title } from "@/components/ui/title";
 import { Wrapper } from "@/components/wrapper";
 import { service } from "@/service";
 import { auth } from "@clerk/nextjs";
-import { Plus } from "lucide-react";
 
 export default async function Dashboard() {
   const { userId } = auth();

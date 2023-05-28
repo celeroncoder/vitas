@@ -36,7 +36,7 @@ export const ProjectGrid: React.FC<{ projects: Project[] }> = ({
   projects,
 }) => {
   return (
-    <div className="flex items-center gap-4 px-4 flex-wrap">
+    <div className="flex items-center gap-4 px-4 flex-wrap mb-4">
       {projects.map((project) => (
         <ProjectCard key={project.id} project={project} />
       ))}
