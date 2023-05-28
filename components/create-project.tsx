@@ -78,7 +78,7 @@ export const CreateProject = () => {
       >
         <Plus className="w-4 mr-2" /> Create Project
       </SheetTrigger>
-      <SheetContent size={"full"}>
+      <SheetContent size={window.screen.width <= 640 ? "full" : "lg"}>
         <SheetHeader>
           <SheetTitle>Create Project</SheetTitle>
           <SheetDescription>Create a new project</SheetDescription>
