@@ -4,6 +4,7 @@ import { Member } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
+import { DataTableColumnHeader } from "./column-header";
 
 export const columns: ColumnDef<Member>[] = [
   {
@@ -27,47 +28,27 @@ export const columns: ColumnDef<Member>[] = [
   },
   {
     accessorKey: "id",
-    cell: ({ row }) => {
-      return (
-        <div className="text-right font-medium w-fit inline">
-          {row.getValue("id")}
-        </div>
-      );
-    },
-    header: ({ column }) => {
-      return (
-        <div
-          className="cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          #
-        </div>
-      );
-    },
+    header: "#",
   },
   {
     accessorKey: "name",
     header: ({ column }) => {
-      return (
-        <div
-          className="cursor-pointer inline-flex items-center"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 w-3" />
-        </div>
-      );
+      return <DataTableColumnHeader column={column} title="Name" />;
     },
   },
   {
     accessorKey: "username",
-    header: "Username",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Username" />;
+    },
     cell: ({ row }) => {
       return `@${row.getValue("username")}`;
     },
   },
   {
     accessorKey: "position",
-    header: "Position/Title",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Position" />;
+    },
   },
 ];
