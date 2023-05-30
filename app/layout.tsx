@@ -23,7 +23,10 @@ export default function RootLayout({
           variables: { colorPrimary: "#a3e635" },
         }}
       >
-        <body style={inter.style}>
+        <body
+          style={inter.style}
+          className="scrollbar-thin scrollbar-thumb-rounded-sm scrollbar-thumb-lime-200/75 scrollbar-track-background scroll-smooth"
+        >
           {children}
           <Toaster />
         </body>
