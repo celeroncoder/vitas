@@ -20,4 +20,13 @@ const create = async (
   }
 };
 
-export const member = { create, getAll };
+const deleteMember = async (id: number): Promise<[boolean, unknown]> => {
+  try {
+    const deletedMemeber = await prisma.member.delete({ where: { id } });
+    return [true, undefined];
+  } catch (error) {
+    return [false, error];
+  }
+};
+
+export const member = { create, getAll, deleteMember };
