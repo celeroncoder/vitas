@@ -20,8 +20,10 @@ import { Loader2, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Project } from "@prisma/client";
 import z from "zod";
+import { useRouter } from "next/navigation";
 
 export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -57,6 +59,9 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
           description: `${res.data.name} was added successfully!`,
         });
         setOpen(false);
+
+        // TODO: replace this to invalidate or refetch the data-table data.
+        router.refresh();
       } else
         toast({
           title: "Some Error Occurred!",
