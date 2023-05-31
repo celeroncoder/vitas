@@ -1,3 +1,4 @@
+import { MemeberUpdateProps } from "@/lib/validators";
 import { service } from "@/service";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -5,16 +6,23 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method == "DELETE") {
+  if (req.method == "PUT") {
     const { id } = req.query;
     const parsedId = parseInt(id! as string);
-    if (parsedId) {
-      const memberId = parsedId;
+    if (req.body && parsedId) {
       try {
-        const [success, error] = await service.member.deleteMember(memberId);
-        if (success) {
-          res.status(204).send({}); // DELETE HTTP STATUS CODE
-        } else res.status(500).json({ error });
+        const parsedBody = MemeberUpdateProps.parse(req.body);
+        const [status, response] = await service.member.update(
+          parsedId,
+          parsedBody
+        );
+
+        if (status) {
+          res.status(200).json({ ...response!, error: undefined });
+        } else
+          res.status(500).json({
+            error: response,
+          });
       } catch (error) {
         console.error("Error:", error);
         res.status(400).json({
@@ -23,7 +31,7 @@ export default async function handler(
       }
     } else
       res.status(400).json({
-        error: "Invalid Member ID",
+        error: "Request Body Not Found",
       });
   } else res.status(405);
 }

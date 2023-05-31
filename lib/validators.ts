@@ -14,3 +14,9 @@ export const MemeberCreateProps = z.object({
 
   projectId: z.string(),
 });
+
+export const MemeberUpdateProps = z.object({
+  name: z.string().min(1),
+  username: z.string().min(1),
+  position: z.string().min(1),
+});
