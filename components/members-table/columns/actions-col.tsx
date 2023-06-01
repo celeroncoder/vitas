@@ -36,7 +36,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { z } from "zod";
-import { MemeberUpdateProps } from "@/lib/validators";
+import { MemberUpdateProps } from "@/lib/validators";
 
 export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
   // TODO: use this to copy the digital id image url
@@ -84,7 +84,7 @@ export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
 
     const save = async () => {
       setUpdateBtnLoading(true);
-      const payload: z.infer<typeof MemeberUpdateProps> = {
+      const payload: z.infer<typeof MemberUpdateProps> = {
         name,
         position,
         username,

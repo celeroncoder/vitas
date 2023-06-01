@@ -1,4 +1,4 @@
-import { MemberCreateProps } from "@/lib/validators";
+import { MemberCreateMultipleProps } from "@/lib/validators";
 import { service } from "@/service";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -9,14 +9,18 @@ export default async function handler(
   if (req.method == "POST") {
     if (req.body) {
       try {
-        const parsedBody = MemberCreateProps.parse(req.body);
-        const newMember = await service.member.create(parsedBody);
+        const parsedBody = MemberCreateMultipleProps.parse(req.body);
 
-        if (newMember[0]) {
-          res.status(201).json({ ...newMember[1]!, error: undefined });
+        const [status, newMembers] = await service.member.createMany(
+          parsedBody.projectId,
+          parsedBody.rows
+        );
+
+        if (status) {
+          res.status(201).json({ ...newMembers!, error: undefined });
         } else
           res.status(500).json({
-            error: newMember[1],
+            error: newMembers,
           });
       } catch (error) {
         console.error("Error:", error);

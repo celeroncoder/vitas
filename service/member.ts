@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/db";
-import { MemeberCreateProps, MemeberUpdateProps } from "@/lib/validators";
-import { Member } from "@prisma/client";
+import {
+  MemberCreateMultipleProps,
+  MemberCreateProps,
+  MemberUpdateProps,
+} from "@/lib/validators";
+import type { Member } from "@prisma/client";
 import { z } from "zod";
 
 const getAll = async (projectId: string): Promise<Member[]> => {
@@ -8,7 +12,7 @@ const getAll = async (projectId: string): Promise<Member[]> => {
 };
 
 const create = async (
-  member: z.infer<typeof MemeberCreateProps>
+  member: z.infer<typeof MemberCreateProps>
 ): Promise<[boolean, unknown | Member]> => {
   try {
     const newMember = await prisma.member.create({
@@ -21,9 +25,25 @@ const create = async (
   }
 };
 
+const createMany = async (
+  projectId: string,
+  rows: z.infer<typeof MemberCreateMultipleProps>["rows"]
+): Promise<[boolean, unknown]> => {
+  try {
+    const newMembers = await prisma.member.createMany({
+      data: rows.map((row) => ({ ...row, projectId: projectId })),
+      skipDuplicates: true,
+    });
+    if (newMembers) return [true, newMembers];
+    else return [false, new Error("Member couldn't be created.")];
+  } catch (error) {
+    return [false, error];
+  }
+};
+
 const update = async (
   id: z.infer<z.ZodNumber>,
-  member: z.infer<typeof MemeberUpdateProps>
+  member: z.infer<typeof MemberUpdateProps>
 ): Promise<[boolean, Member | unknown]> => {
   try {
     const updatedMember = await prisma.member.update({
@@ -47,4 +67,4 @@ const deleteMember = async (id: number): Promise<[boolean, unknown]> => {
   }
 };
 
-export const member = { create, getAll, update, deleteMember };
+export const member = { create, createMany, getAll, update, deleteMember };

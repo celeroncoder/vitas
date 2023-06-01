@@ -13,7 +13,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { useState } from "react";
 import { Button, buttonVariants } from "./ui/button";
-import { MemeberCreateProps } from "@/lib/validators";
+import { MemberCreateProps } from "@/lib/validators";
 import { api } from "@/lib/axios";
 import { useToast } from "./ui/use-toast";
 import { Loader2, Plus } from "lucide-react";
@@ -41,13 +41,13 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
 
   const add = async () => {
     setIsLoading(true);
-    const member: z.infer<typeof MemeberCreateProps> = {
+    const member: z.infer<typeof MemberCreateProps> = {
       name,
       username,
       position,
       projectId: project.id,
     };
-    const payload = MemeberCreateProps.safeParse(member);
+    const payload = MemberCreateProps.safeParse(member);
 
     if (payload.success) {
       const res = await api.post("/members/create", payload.data);
@@ -84,7 +84,7 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
         className={cn(
           "group shadow-sm hover:shadow-lg duration-300",
           buttonVariants({
-            variant: "default",
+            variant: "outline",
             size: window.screen.width <= 640 ? "sm" : "default",
           })
         )}

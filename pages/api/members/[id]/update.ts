@@ -1,4 +1,4 @@
-import { MemeberUpdateProps } from "@/lib/validators";
+import { MemberUpdateProps } from "@/lib/validators";
 import { service } from "@/service";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -11,7 +11,7 @@ export default async function handler(
     const parsedId = parseInt(id! as string);
     if (req.body && parsedId) {
       try {
-        const parsedBody = MemeberUpdateProps.parse(req.body);
+        const parsedBody = MemberUpdateProps.parse(req.body);
         const [status, response] = await service.member.update(
           parsedId,
           parsedBody
