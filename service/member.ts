@@ -67,4 +67,27 @@ const deleteMember = async (id: number): Promise<[boolean, unknown]> => {
   }
 };
 
-export const member = { create, createMany, getAll, update, deleteMember };
+const deleteMany = async (ids: number[]): Promise<[boolean, unknown]> => {
+  try {
+    const deletedMembers = await prisma.member.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+    if (deletedMembers) return [true, undefined];
+    else return [false, new Error("Members couldn't be defeated.")];
+  } catch (error) {
+    return [false, error];
+  }
+};
+
+export const member = {
+  create,
+  createMany,
+  getAll,
+  update,
+  deleteMember,
+  deleteMany,
+};

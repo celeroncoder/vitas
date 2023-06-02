@@ -44,3 +44,7 @@ export const MemberCreateMultipleProps = z.object({
 export type MemberCreateRows = z.infer<
   ReturnType<typeof generateRowsValidator>
 >;
+
+export const MemberDeleteManyProps = z.object({
+  ids: z.number().array(),
+});
