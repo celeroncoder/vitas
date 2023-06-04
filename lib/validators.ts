@@ -7,6 +7,12 @@ export const ProjectCreateProps = z.object({
   displayUrl: z.string().optional(),
 });
 
+export const ProjectUpdateProps = z.object({
+  name: z.string().min(3),
+  displayName: z.string().min(3),
+  displayUrl: z.string().optional(),
+});
+
 export const MemberCreateProps = z.object({
   name: z.string().min(1),
   username: z.string().min(1),

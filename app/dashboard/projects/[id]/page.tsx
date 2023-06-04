@@ -1,12 +1,12 @@
 import { AddMember } from "@/components/add-member";
 import { AddMembersCSV } from "@/components/add-members-csv";
 import { MembersTable } from "@/components/members-table";
+import ProjectNotFoundPage from "@/components/project-not-found";
 import { Sidebar } from "@/components/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Title } from "@/components/ui/title";
 import { Wrapper } from "@/components/wrapper";
 import { service } from "@/service";
-import Link from "next/link";
 
 type ProjectPageProps = {
   params: { id: string };
@@ -16,7 +16,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const project = await service.project.getOne(params.id);
   const members = await service.member.getAll(params.id);
 
-  if (!project) return <ProjectsNotFoundPage />;
+  if (!project) return <ProjectNotFoundPage />;
 
   return (
     <Wrapper>
@@ -38,25 +38,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <Separator />
           <MembersTable members={members} />
         </main>
-      </div>
-    </Wrapper>
-  );
-}
-
-function ProjectsNotFoundPage() {
-  return (
-    <Wrapper>
-      <div className="flex items-center justify-center w-full p-4">
-        <h1 className="text-xl">
-          Sorry Didn't Find Anything,{" "}
-          <Link
-            href="/dashboard"
-            className="underline underline-offset-2 text-lime-400"
-          >
-            see all projects
-          </Link>
-          .
-        </h1>
       </div>
     </Wrapper>
   );

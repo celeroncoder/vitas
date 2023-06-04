@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { ProjectCreateProps } from "@/lib/validators";
+import { ProjectCreateProps, ProjectUpdateProps } from "@/lib/validators";
 import { Project } from "@prisma/client";
 import { z } from "zod";
 
@@ -26,8 +26,26 @@ async function create(
   }
 }
 
+async function update(
+  id: string,
+  project: z.infer<typeof ProjectUpdateProps>
+): Promise<[boolean, Project | unknown]> {
+  try {
+    return [
+      true,
+      await prisma.project.update({
+        where: { id },
+        data: { ...project },
+      }),
+    ];
+  } catch (error) {
+    return [false, error];
+  }
+}
+
 export const project = {
   getAll,
   create,
+  update,
   getOne,
 };

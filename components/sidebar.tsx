@@ -4,17 +4,18 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import { useParams, usePathname } from "next/navigation";
-import { LayoutDashboard, LucideIcon, User } from "lucide-react";
+import { Cog, LayoutDashboard, LucideIcon, User } from "lucide-react";
 
 export type SidebarLink = {
   label: string;
   url: string;
   icon: LucideIcon;
+  className?: string;
 };
 
 const generateLinks = (id: string): SidebarLink[] => [
   {
-    label: "Dashboard",
+    label: "Projects",
     url: "/dashboard",
     icon: LayoutDashboard,
   },
@@ -22,6 +23,12 @@ const generateLinks = (id: string): SidebarLink[] => [
     label: "Members",
     url: `/dashboard/projects/${id}`,
     icon: User,
+  },
+  {
+    label: "Settings",
+    url: `/dashboard/projects/${id}/settings`,
+    icon: Cog,
+    className: "mt-auto",
   },
 ];
 
@@ -40,7 +47,8 @@ export const Sidebar = () => {
             buttonVariants({
               variant: pathname == link.url ? "secondary" : "ghost",
             }),
-            "flex items-center justify-start gap-2"
+            "flex items-center justify-start gap-2",
+            link.className
           )}
         >
           <link.icon className="w-4" />
