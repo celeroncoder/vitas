@@ -1,11 +1,18 @@
+import { ProjectDeleteConfirmation } from "@/components/project-delete";
 import ProjectNotFoundPage from "@/components/project-not-found";
 import { Sidebar } from "@/components/sidebar";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Title } from "@/components/ui/title";
 import { UpdateProject } from "@/components/update-project";
 import { Wrapper } from "@/components/wrapper";
+import { cn } from "@/lib/utils";
 import { service } from "@/service";
 
 type ProjectSettingsPageProps = {
@@ -23,26 +30,44 @@ export default async function ProjectSettingsPage({
     <Wrapper>
       <div className="flex w-full flex-1">
         <Sidebar />
-        <main className="flex-1 flex lg:flex-row md:flex-row flex-col gap-16 px-4 py-2">
-          {/* update col */}
-          <div className="flex-[0.6] my-2">
-            <div className="mb-6">
-              <Title className="text-2xl mb-2">Update Project</Title>
-              <Separator />
-            </div>
-            <UpdateProject project={project} />
-          </div>
-
-          {/* usage col */}
-          <div className="flex-[0.4] my-2 flex flex-col gap-4">
-            <div className="mb-6">
-              <Title className="text-2xl mb-2">Usage</Title>
-              <Separator />
-            </div>
-            <p className="text-muted-foreground text-sm">
-              🚧 This is under construction 🚧
+        <main className="flex-1 px-4 pt-2 pb-4">
+          <div className="mb-4">
+            <Title className="text-3xl">Settings</Title>
+            <p className="text-muted-foreground">
+              Manage Project & Member Settings
             </p>
           </div>
+          <Card className="shadow mb-2">
+            <CardHeader>
+              <CardTitle>Update Project</CardTitle>
+              <CardDescription>
+                Update the project details, these details will show up on the ID
+                Card also.
+              </CardDescription>
+            </CardHeader>
+            <UpdateProject project={project} />
+          </Card>
+          <Card className="shadow">
+            <CardHeader>
+              <CardTitle>Danger Zone</CardTitle>
+              <CardDescription>
+                This will permenentely delete the project and all the members in
+                it. The ID Card from this project will no longer be valid.{" "}
+                <span className="font-semibold">
+                  This action is irreversible.
+                </span>
+              </CardDescription>
+            </CardHeader>
+            <CardFooter className="justify-end">
+              <ProjectDeleteConfirmation
+                triggerClassName={cn(
+                  "hover:shadow-md duration-300",
+                  buttonVariants({ variant: "destructive" })
+                )}
+                project={project}
+              />
+            </CardFooter>
+          </Card>
         </main>
       </div>
     </Wrapper>

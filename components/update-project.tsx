@@ -11,6 +11,7 @@ import { z } from "zod";
 import { useToast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { CardContent, CardFooter } from "./ui/card";
 
 export const UpdateProject: React.FC<{ project: Project }> = ({ project }) => {
   const [name, setName] = useState(project.name);
@@ -67,45 +68,48 @@ export const UpdateProject: React.FC<{ project: Project }> = ({ project }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* name */}
-      <div className="flex flex-col gap-1">
-        <Label className="">Name</Label>
-        <Input value={name} onChange={(e) => setName(e.target.value)} />
-        <p className="text-sm text-muted-foreground">
-          This is the main name of the project, that is shown on the dashboard.
-        </p>
-      </div>
+    <>
+      <CardContent className="flex flex-col gap-4">
+        {/* name */}
+        <div className="flex flex-col gap-1">
+          <Label className="">Name</Label>
+          <Input value={name} onChange={(e) => setName(e.target.value)} />
+          <p className="text-sm text-muted-foreground">
+            This is the main name of the project, that is shown on the
+            dashboard.
+          </p>
+        </div>
 
-      {/* display name */}
-      <div className="flex flex-col gap-1">
-        <Label className="">Display Name</Label>
-        <Input
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-        />
-        <p className="text-sm text-muted-foreground">
-          This is the name of the project, that is displayed on the ID Card
-          Itself.
-        </p>
-      </div>
+        {/* display name */}
+        <div className="flex flex-col gap-1">
+          <Label className="">Display Name</Label>
+          <Input
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+          />
+          <p className="text-sm text-muted-foreground">
+            This is the name of the project, that is displayed on the ID Card
+            Itself.
+          </p>
+        </div>
 
-      {/* display url */}
-      <div className="flex flex-col gap-1">
-        <Label className="">Display URL</Label>
-        <Input
-          value={displayUrl || ""}
-          onChange={(e) =>
-            setDisplayUrl(e.target.value === "" ? null : e.target.value)
-          }
-        />
-        <p className="text-sm text-muted-foreground">
-          This will be displayed on the ID Card, add your social media handel,
-          website url or any tagline you want to display.
-        </p>
-      </div>
+        {/* display url */}
+        <div className="flex flex-col gap-1">
+          <Label className="">Display URL</Label>
+          <Input
+            value={displayUrl || ""}
+            onChange={(e) =>
+              setDisplayUrl(e.target.value === "" ? null : e.target.value)
+            }
+          />
+          <p className="text-sm text-muted-foreground">
+            This will be displayed on the ID Card, add your social media handel,
+            website url or any tagline you want to display.
+          </p>
+        </div>
+      </CardContent>
 
-      <div className="flex items-center justify-end gap-2 mt-4">
+      <CardFooter className="justify-end gap-2">
         <Button onClick={reset} disabled={!isChange} variant={"secondary"}>
           Reset
         </Button>
@@ -113,7 +117,7 @@ export const UpdateProject: React.FC<{ project: Project }> = ({ project }) => {
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isLoading ? "Please Wait" : "Save"}
         </Button>
-      </div>
-    </div>
+      </CardFooter>
+    </>
   );
 };

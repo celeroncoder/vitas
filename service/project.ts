@@ -43,9 +43,20 @@ async function update(
   }
 }
 
+const deleteProject = async (id: string): Promise<[boolean, unknown]> => {
+  try {
+    const deletedProject = await prisma.project.delete({ where: { id } });
+    if (deletedProject) return [true, undefined];
+    else return [false, new Error("Project couldn't be deleted.")];
+  } catch (error) {
+    return [false, error];
+  }
+};
+
 export const project = {
   getAll,
   create,
   update,
   getOne,
+  deleteProject,
 };
