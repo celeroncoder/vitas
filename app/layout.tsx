@@ -3,6 +3,7 @@ import { inter } from "@/lib/fonts";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { neobrutalism } from "@clerk/themes";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata = {
   title: "get.id",
@@ -17,20 +18,27 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <ClerkProvider
-        appearance={{
-          baseTheme: neobrutalism,
-          variables: { colorPrimary: "#a3e635" },
-        }}
+      <body
+        style={inter.style}
+        className="scrollbar-thin scrollbar-thumb-rounded-sm scrollbar-thumb-lime-200/75 scrollbar-track-background scroll-smooth"
       >
-        <body
-          style={inter.style}
-          className="scrollbar-thin scrollbar-thumb-rounded-sm scrollbar-thumb-lime-200/75 scrollbar-track-background scroll-smooth"
+        <ClerkProvider
+          appearance={{
+            baseTheme: neobrutalism,
+            variables: { colorPrimary: "#a3e635" },
+          }}
         >
-          {children}
-          <Toaster />
-        </body>
-      </ClerkProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            storageKey="theme"
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </ClerkProvider>
+      </body>
     </html>
   );
 }
