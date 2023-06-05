@@ -8,6 +8,7 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -64,6 +65,7 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    getPaginationRowModel: getPaginationRowModel(),
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
@@ -155,6 +157,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
+      {/* Table Actions - (Filters, Search & Mass Actions) */}
       <div className="flex items-center justify-between py-4 gap-2">
         {/* filtering through name */}
         <Input
@@ -208,6 +211,8 @@ export function DataTable<TData, TValue>({
           </DropdownMenu>
         </div>
       </div>
+
+      {/* The Table */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -257,6 +262,8 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination */}
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
