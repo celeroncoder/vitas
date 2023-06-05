@@ -23,7 +23,7 @@ export default async function ProjectSettingsPage({
     <Wrapper>
       <div className="flex w-full flex-1">
         <Sidebar />
-        <main className="flex-1 flex gap-16 px-4 py-2">
+        <main className="flex-1 flex lg:flex-row md:flex-row flex-col gap-16 px-4 py-2">
           {/* update col */}
           <div className="flex-[0.6] my-2">
             <div className="mb-6">
