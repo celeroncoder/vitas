@@ -10,7 +10,7 @@ export default function Home() {
       </Title>
       <Link
         href="/dashboard"
-        className="items-center flex bg-white border-2 border-lime-400 duration-200 ease-in-out focus:outline-none hover:bg-lime-400 hover:shadow-none hover:text-primary-foreground justify-center rounded-xl shadow-[5px_5px] shadow-lime-400 transform transition w-full lg:w-auto px-6 py-3"
+        className="items-center flex bg-white border-2 border-lime-400 duration-200 ease-in-out focus:outline-none hover:bg-lime-400 hover:shadow-none hover:text-primary-foreground justify-center rounded-xl shadow-[5px_5px] shadow-lime-400 transform transition w-full lg:w-auto px-6 py-3 font-semibold"
       >
         Go To Dashboard <ChevronRight className="w-4" />
       </Link>
