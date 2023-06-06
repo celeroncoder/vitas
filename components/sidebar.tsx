@@ -4,7 +4,13 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import { useParams, usePathname } from "next/navigation";
-import { Cog, LayoutDashboard, LucideIcon, User } from "lucide-react";
+import {
+  Cog,
+  CreditCard,
+  LayoutDashboard,
+  LucideIcon,
+  User,
+} from "lucide-react";
 
 export type SidebarLink = {
   label: string;
@@ -25,10 +31,14 @@ const generateLinks = (id: string): SidebarLink[] => [
     icon: User,
   },
   {
+    label: "ID Card",
+    url: `/dashboard/projects/${id}/idcard`,
+    icon: CreditCard,
+  },
+  {
     label: "Settings",
     url: `/dashboard/projects/${id}/settings`,
     icon: Cog,
-    // className: "mt-auto",
   },
 ];
 
