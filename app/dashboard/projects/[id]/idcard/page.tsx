@@ -1,8 +1,22 @@
+import { IDCardFlip } from "@/components/idcard";
+import ProjectNotFoundPage from "@/components/project-not-found";
 import { Sidebar } from "@/components/sidebar";
 import { Title } from "@/components/ui/title";
 import { Wrapper } from "@/components/wrapper";
+import { service } from "@/service";
+import { currentUser } from "@clerk/nextjs";
 
-export default async function IDCardPage() {
+type ProjectIDCardPageProps = {
+  params: { id: string };
+};
+
+export default async function IDCardPage({ params }: ProjectIDCardPageProps) {
+  const project = await service.project.getOne(params.id);
+
+  const user = await currentUser();
+
+  if (!project || !user) return <ProjectNotFoundPage />;
+
   return (
     <Wrapper>
       <div className="flex w-full flex-1">
@@ -10,37 +24,51 @@ export default async function IDCardPage() {
         <main className="flex-1 px-4 pt-2 pb-4">
           <div className="mb-4">
             <Title className="text-3xl">ID Card</Title>
-            <p className="text-muted-foreground">Manage ID Card</p>
+            <p className="text-muted-foreground">View ID Card Layout</p>
           </div>
-          <section className="flex flex-wrap items-start gap-10">
-            {/* front */}
-            <div className="relative overflow-hidden select-none bg-foreground text-background w-[552px] h-[368px] rounded-lg shadow-sm hover:shadow-lg hover:scale-105 duration-150 flex flex-col justify-between p-10">
-              <div>
-                <Title className="text-4xl">John Doe</Title>
-                <p className="text-md">@johndoe</p>
-              </div>
-              <div className="text-muted-foreground">
-                <p>Founder & CEO</p>
-                <p className="font-bold">GETID.ORG</p>
-              </div>
-
-              <div className="absolute -z-0 max-h-fit w-[552px] leading-tight text-center -right-52 bottom-24 rotate-90 text-9xl font-extrabold text-muted-foreground">
-                XOXOXO
-              </div>
+          <section className="flex flex-wrap gap-10 w-full">
+            <div className="flex-[0.5]">
+              <IDCardFlip />
             </div>
-
-            {/* back */}
-            <div className="relative overflow-hidden select-none bg-foreground text-background w-[552px] h-[368px] rounded-lg shadow-sm hover:shadow-lg hover:scale-105 duration-150 flex flex-col items-center justify-end p-10">
-              <div className="font-semibold text-lg text-muted-foreground">
-                www.getid.tech
-              </div>
-              <div className="absolute -z-0 tracking max-h-fit w-[552px] leading-tight text-center -right-52 bottom-24 rotate-90 text-9xl font-extrabold text-muted-foreground">
-                XOXOXO
-              </div>
-            </div>
+            <section className="flex-[0.5]">
+              <Title className="text-2xl">FAQs</Title>
+              <FAQs />
+            </section>
           </section>
         </main>
       </div>
     </Wrapper>
+  );
+}
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
+
+function FAQs() {
+  return (
+    <Accordion type="single" collapsible>
+      <AccordionItem value="item-1">
+        <AccordionTrigger>Is it printable?</AccordionTrigger>
+        <AccordionContent>
+          Yes. It adheres to the standard{" "}
+          <Link
+            href={"https://www.cardlogix.com/glossary/cr80/"}
+            className="text-bold underline underline-offset-2"
+          >
+            CR80
+          </Link>{" "}
+          card size. CR-80 represents the most common ID card size. CR80 ID
+          cards are more commonly known as credit card-sized ID cards because,
+          as you may have guessed, they are the same size as a standard credit
+          card.
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }
