@@ -19,26 +19,21 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   if (!project) return <ProjectNotFoundPage />;
 
   return (
-    <Wrapper>
-      <div className="flex w-full flex-1">
-        <Sidebar />
-        <main className="flex-1 px-4">
-          <div className="w-full flex flex-wrap gap-2 items-center justify-between py-2 my-4">
-            <div>
-              <p className="text-sm text-muted-foreground">
-                Project: "{project.name}"
-              </p>
-              <Title className="text-2xl">Your Members</Title>
-            </div>
-            <div className="flex items-center gap-2">
-              <AddMembersCSV project={project} />
-              <AddMember project={project} />
-            </div>
-          </div>
-          <Separator />
-          <MembersTable members={members} />
-        </main>
+    <>
+      <div className="w-full flex flex-wrap gap-2 items-center justify-between pt-1 pb-4">
+        <div>
+          <p className="text-sm text-muted-foreground">
+            Project: "{project.name}"
+          </p>
+          <Title className="text-2xl">Your Members</Title>
+        </div>
+        <div className="flex items-center gap-2">
+          <AddMembersCSV project={project} />
+          <AddMember project={project} />
+        </div>
       </div>
-    </Wrapper>
+      <Separator />
+      <MembersTable members={members} />
+    </>
   );
 }

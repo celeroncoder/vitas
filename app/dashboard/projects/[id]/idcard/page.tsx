@@ -1,8 +1,6 @@
 import { IDCardFlip } from "@/components/idcard";
 import ProjectNotFoundPage from "@/components/project-not-found";
-import { Sidebar } from "@/components/sidebar";
 import { Title } from "@/components/ui/title";
-import { Wrapper } from "@/components/wrapper";
 import { service } from "@/service";
 import { currentUser } from "@clerk/nextjs";
 
@@ -18,26 +16,21 @@ export default async function IDCardPage({ params }: ProjectIDCardPageProps) {
   if (!project || !user) return <ProjectNotFoundPage />;
 
   return (
-    <Wrapper>
-      <div className="flex w-full flex-1">
-        <Sidebar />
-        <main className="flex-1 px-4 pt-2 pb-4">
-          <div className="mb-4">
-            <Title className="text-3xl">ID Card</Title>
-            <p className="text-muted-foreground">View ID Card Layout</p>
-          </div>
-          <section className="flex flex-wrap gap-10 w-full">
-            <div className="flex-[0.5]">
-              <IDCardFlip />
-            </div>
-            <section className="flex-[0.5]">
-              <Title className="text-2xl">FAQs</Title>
-              <FAQs />
-            </section>
-          </section>
-        </main>
+    <>
+      <div className="mb-4">
+        <Title className="text-3xl">ID Card</Title>
+        <p className="text-muted-foreground">View ID Card Layout</p>
       </div>
-    </Wrapper>
+      <section className="flex flex-wrap gap-10 w-full">
+        <div className="flex-[0.5]">
+          <IDCardFlip />
+        </div>
+        <section className="flex-[0.5]">
+          <Title className="text-2xl">FAQs</Title>
+          <FAQs />
+        </section>
+      </section>
+    </>
   );
 }
 
@@ -48,7 +41,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Link from "next/link";
-import { Separator } from "@/components/ui/separator";
 
 function FAQs() {
   return (
