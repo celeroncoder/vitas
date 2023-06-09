@@ -8,8 +8,6 @@ import { auth } from "@clerk/nextjs";
 export default async function Dashboard() {
   const { userId } = auth();
   const projects = await service.project.getAll(userId!);
-  const account = await service.account.getOne(userId!);
-  console.log(account);
 
   return (
     <Wrapper>
