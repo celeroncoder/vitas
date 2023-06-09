@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+export const AccountCreateProps = z.object({
+  id: z.string(),
+});
+
+export type AccountCreateProps = z.infer<typeof AccountCreateProps>;
+
 export const ProjectCreateProps = z.object({
   userId: z.string().min(3),
   name: z.string().min(3),
