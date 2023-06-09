@@ -2,36 +2,43 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider  = "postgresql"
-    url       = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Account {
+  id String @id
+
+  isPremium     Boolean @default(false)
+  transactionID String?
 }
 
 model Project {
-    id String @id @default(cuid())
+  id String @id @default(cuid())
 
-    userId String
+  userId String
 
-    name        String  @unique
-    displayName String
-    displayUrl  String?
+  name        String  @unique
+  displayName String
+  displayUrl  String?
 
-    members Member[]
+  members Member[]
 }
 
 model Member {
-    id Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-    name     String
-    username String
-    position String
+  name     String
+  username String
+  position String
 
-    project   Project @relation(references: [id], fields: [projectId], onDelete: Cascade)
-    projectId String
+  project   Project @relation(references: [id], fields: [projectId], onDelete: Cascade)
+  projectId String
 
-    @@map("Members")
+  @@map("Members")
 }
