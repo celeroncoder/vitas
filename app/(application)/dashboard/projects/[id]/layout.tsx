@@ -1,5 +1,4 @@
 import { Sidebar, SidebarLink } from "@/components/sidebar";
-import { Wrapper } from "@/components/wrapper";
 import { Cog, CreditCard, LayoutDashboard, User } from "lucide-react";
 
 const generateLinks = (id: string): SidebarLink[] => [
@@ -31,12 +30,10 @@ const ProjectLayout: React.FC<{
 }> = ({ children, params }) => {
   const links = generateLinks(params.id);
   return (
-    <Wrapper>
-      <div className="flex w-full flex-1">
-        <Sidebar links={links} />
-        <main className="flex-1 px-4 pt-2 pb-4">{children}</main>
-      </div>
-    </Wrapper>
+    <div className="flex w-full flex-1">
+      <Sidebar links={links} />
+      <main className="flex-1 px-4 pt-2 pb-4">{children}</main>
+    </div>
   );
 };
 

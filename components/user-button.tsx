@@ -60,7 +60,7 @@ export const UserDropdownMenu = () => {
             <AvatarImage src={user.imageUrl} />
             <AvatarFallback>{user.username}</AvatarFallback>
           </Avatar>
-          <p>
+          <p className="lowercase">
             {user.username === "" || !user.username
               ? user.firstName
               : user.username}

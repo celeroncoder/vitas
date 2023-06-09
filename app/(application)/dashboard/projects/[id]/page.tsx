@@ -2,10 +2,8 @@ import { AddMember } from "@/components/add-member";
 import { AddMembersCSV } from "@/components/add-members-csv";
 import { MembersTable } from "@/components/members-table";
 import ProjectNotFoundPage from "@/components/project-not-found";
-import { Sidebar } from "@/components/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Title } from "@/components/ui/title";
-import { Wrapper } from "@/components/wrapper";
 import { service } from "@/service";
 
 type ProjectPageProps = {
