@@ -1,9 +1,7 @@
-import { UserButton } from "@clerk/nextjs";
-import { neobrutalism } from "@clerk/themes";
 import Link from "next/link";
-import { Title } from "./ui/title";
 import { ThemeToggle } from "./theme-toggle";
 import { Logo } from "./logo";
+import { UserDropdownMenu } from "@/components/user-button";
 
 export const Header = () => {
   return (
@@ -13,13 +11,7 @@ export const Header = () => {
       </Link>
       <div className="flex items-center gap-2">
         <ThemeToggle />
-        <UserButton
-          appearance={{
-            baseTheme: neobrutalism,
-            variables: { colorPrimary: "#a3e635" },
-          }}
-          afterSignOutUrl="/sign-in"
-        />
+        <UserDropdownMenu />
       </div>
     </header>
   );
