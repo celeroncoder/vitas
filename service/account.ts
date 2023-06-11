@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { AccountCreateProps } from "@/lib/validators";
+import { AccountCreateProps, AccountUpdateData } from "@/lib/validators";
 import { currentUser } from "@clerk/nextjs";
 import { User } from "@clerk/nextjs/dist/types/server";
 import { Account } from "@prisma/client";
@@ -35,8 +35,29 @@ async function create(
   }
 }
 
+const update = async (props: {
+  data: AccountUpdateData;
+  id?: string;
+  stripeSubscriptionId?: string;
+}): Promise<[boolean, unknown]> => {
+  const { data, id, stripeSubscriptionId } = props;
+  try {
+    const updatedAccount = await prisma.account.update({
+      where: id ? { id } : { stripeSubscriptionId },
+      data: { ...data },
+    });
+
+    if (updatedAccount) return [true, updatedAccount];
+    else return [false, new Error("Account couldn't be updated.")];
+  } catch (error) {
+    console.error(error);
+    return [false, error];
+  }
+};
+
 export const account = {
   getOne,
-  create,
   get,
+  create,
+  update,
 };

@@ -1,4 +1,31 @@
 import { z } from "zod";
+import { Account } from "@prisma/client";
+
+export const StripeChecoutSessionCreateProps = z.object({
+  email: z.string().email(),
+  accountId: z.string(),
+});
+
+export type StripeChecoutSessionCreateProps = z.infer<
+  typeof StripeChecoutSessionCreateProps
+>;
+
+export const StripeChecoutSessionCreateResult = z.object({
+  url: z.string().url(),
+});
+
+export type StripeChecoutSessionCreateResult = z.infer<
+  typeof StripeChecoutSessionCreateResult
+>;
+
+export const AccountUpdateData = z.object({
+  stripeSubscriptionId: z.string().optional(),
+  stripeCustomerId: z.string().optional(),
+  stripePriceId: z.string(),
+  stripeCurrentPeriodEnd: z.date(),
+});
+
+export type AccountUpdateData = z.infer<typeof AccountUpdateData>;
 
 export const AccountCreateProps = z.object({
   id: z.string(),
