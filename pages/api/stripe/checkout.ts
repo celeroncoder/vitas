@@ -2,6 +2,8 @@ import { env } from "@/env.mjs";
 import { stripe } from "@/lib/stripe";
 import { absoluteUrl } from "@/lib/utils";
 import { StripeChecoutSessionCreateProps } from "@/lib/validators";
+import { service } from "@/service";
+import { isUserSubscribed } from "@/service/subscription";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const billingUrl = absoluteUrl(
@@ -18,6 +20,25 @@ export default async function handler(
       const body = parsedBody.data;
 
       try {
+        const account = await service.account.getOne(body.accountId);
+        if (!account) return res.status(401).end("Unauthorized");
+
+        const [success, isSubscribed] = await isUserSubscribed(account.id);
+
+        if (!success) return res.status(500).end("Internal server error");
+
+        // the user is already on pro plan and want a portal to manage subscription
+        if (isSubscribed && account.stripeCustomerId) {
+          const stripeSession = await stripe.billingPortal.sessions.create({
+            customer: account.stripeCustomerId,
+            return_url: absoluteUrl("/settings/billing"),
+          });
+
+          return res.status(201).json({ url: stripeSession.url });
+        }
+
+        // the user is on free plan is upgrading
+        // creating a checkout session to upgrade
         const stripeSession = await stripe.checkout.sessions.create({
           success_url: billingUrl,
           cancel_url: billingUrl,

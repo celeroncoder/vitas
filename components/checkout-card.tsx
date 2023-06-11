@@ -16,22 +16,21 @@ import {
 } from "@/lib/validators";
 import { Account } from "@prisma/client";
 import { useToast } from "./ui/use-toast";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 
 export const CheckoutCard: React.FC<{
   account: Account;
   isSubscribed: boolean;
-}> = ({ account, isSubscribed }) => {
+  isCanceled: boolean;
+}> = ({ account, isSubscribed, isCanceled }) => {
   const { toast } = useToast();
   const { user } = useUser();
   const router = useRouter();
 
-  console.log(account);
-
   if (!user) return <p>Loading...</p>;
 
-  const upgrade = async () => {
+  const action = async () => {
     const payload: StripeChecoutSessionCreateProps = {
       accountId: account.id,
       email: user?.emailAddresses[0].emailAddress!,
@@ -78,10 +77,25 @@ export const CheckoutCard: React.FC<{
           application.
         </p>
       </CardContent>
-      <CardFooter>
-        <Button onClick={!isSubscribed ? upgrade : undefined}>
+      <CardFooter className="flex items-center justify-between flex-wrap">
+        <Button onClick={action}>
           {isSubscribed ? "Manage Subscription" : "Upgrade to Premium"}
         </Button>
+        {isSubscribed && (
+          <p className="text-sm text-muted-foreground">
+            {isCanceled
+              ? "You plan will be cancelled on "
+              : "Your plan renews on "}
+
+            <strong>
+              {account.stripeCurrentPeriodEnd!.toLocaleDateString("en-IN", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </strong>
+          </p>
+        )}
       </CardFooter>
     </Card>
   );
