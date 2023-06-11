@@ -14,7 +14,7 @@ export default async function handler(
 
     let event: Stripe.Event;
 
-    // getting the stipe event
+    // getting the stripe event
     try {
       event = stripe.webhooks.constructEvent(
         body,
