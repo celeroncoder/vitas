@@ -1,7 +1,18 @@
 import { IDCardBack } from "./back";
 import { IDCardFront } from "./front";
 
-export const IDCardFlip = () => {
+export type IDCardFlipProps = {
+  memberID: string;
+  name: string;
+  username: string;
+  position: string;
+  projectDisplayName: string;
+  projectDisplayURL: string;
+};
+
+export const IDCardFlip: React.FC<{ data?: Readonly<IDCardFlipProps> }> = ({
+  data,
+}) => {
   return (
     <div
       className="flip-card w-[552px] h-[368px] cursor-pointer group"
@@ -19,10 +30,10 @@ export const IDCardFlip = () => {
           }}
         >
           <IDCardFront
-            name="Khushal Bhardwaj"
-            username="celeroncoder"
-            position="Founder & CEO"
-            projectDisplayName="GETID.ORG"
+            name={data ? data.name : "Khushal Bhardwaj"}
+            username={data ? data.username : "celeroncoder"}
+            position={data ? data.position : "Founder & CEO"}
+            projectDisplayName={data ? data.projectDisplayName : "GETID.ORG"}
           />
         </div>
 
@@ -33,7 +44,10 @@ export const IDCardFlip = () => {
             WebkitBackfaceVisibility: "hidden",
           }}
         >
-          <IDCardBack memberID="2342fa" projectDisplayURL="www.getid.sh" />
+          <IDCardBack
+            memberID={data ? data.memberID : "2342fa"}
+            projectDisplayURL={data ? data.projectDisplayURL : "www.getid.sh"}
+          />
         </div>
       </div>
     </div>

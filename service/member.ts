@@ -11,6 +11,10 @@ const getAll = async (projectId: string): Promise<Member[]> => {
   return await prisma.member.findMany({ where: { projectId } });
 };
 
+const getOne = async (id: Member["id"]): Promise<Member | null> => {
+  return await prisma.member.findUnique({ where: { id } });
+};
+
 const create = async (
   member: z.infer<typeof MemberCreateProps>
 ): Promise<[boolean, unknown | Member]> => {
@@ -87,6 +91,7 @@ export const member = {
   create,
   createMany,
   getAll,
+  getOne,
   update,
   deleteMember,
   deleteMany,
