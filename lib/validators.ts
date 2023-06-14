@@ -1,5 +1,18 @@
+import { CardEmailTemplateProps } from "@/components/card-email-template";
 import { z } from "zod";
-import { Account } from "@prisma/client";
+
+// create a zod schema from the the CardEmailTemplateProps type
+export const CardEmailSendProps = z.object({
+  memberID: z.string(),
+  name: z.string(),
+  username: z.string(),
+  position: z.string(),
+  projectDisplayName: z.string(),
+  projectDisplayURL: z.string(),
+  projectCreatorName: z.string(),
+});
+
+export type CardEmailSendProps = z.infer<typeof CardEmailSendProps>;
 
 export const StripeChecoutSessionCreateProps = z.object({
   email: z.string().email(),
