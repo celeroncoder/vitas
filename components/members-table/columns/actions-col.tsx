@@ -1,7 +1,7 @@
 import { Member } from "@prisma/client";
 import { Row } from "@tanstack/react-table";
 
-import { Copy, Edit, Loader2, MoreHorizontal, Trash } from "lucide-react";
+import { Copy, Edit, Loader2, Mail, MoreHorizontal, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -48,6 +48,24 @@ export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteBtnLoading, setDeleteBtnLoading] = useState(false);
+
+  const sendEmail = async () => {
+    try {
+      const res = await api.post(`/members/${member.id.toString()}/email`);
+
+      if (res.status == 200)
+        toast({
+          title: "Email Sent",
+          description: `The Digital Card was successfully deliverd to ${member.name}'s email address.`,
+        });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Uh Oh! There was a problem sending the email!",
+        variant: "destructive",
+      });
+    }
+  };
 
   const deleteMember = async () => {
     setDeleteBtnLoading(true);
@@ -197,6 +215,9 @@ export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => navigator.clipboard.writeText("#")}>
             <Copy className="w-3 mr-2" /> Copy URL
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={sendEmail}>
+            <Mail className="mr-2 w-3" /> Deliever
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setEditModalOpen(true)}>

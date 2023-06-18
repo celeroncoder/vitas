@@ -1,5 +1,15 @@
 import { z } from "zod";
-import { Account } from "@prisma/client";
+
+export const CardEmailSendProps = z.object({
+  cardUrl: z.string().url(),
+  member: z.object({
+    name: z.string(),
+  }),
+  projectDisplayName: z.string(),
+  projectOwnerName: z.string(),
+});
+
+export type CardEmailSendProps = z.infer<typeof CardEmailSendProps>;
 
 export const StripeChecoutSessionCreateProps = z.object({
   email: z.string().email(),
