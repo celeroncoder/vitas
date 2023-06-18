@@ -39,6 +39,8 @@ model Member {
   username String
   position String
 
+  email String?
+
   project   Project @relation(references: [id], fields: [projectId], onDelete: Cascade)
   projectId String
 
