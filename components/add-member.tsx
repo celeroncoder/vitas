@@ -30,11 +30,13 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [position, setPosition] = useState("");
+  const [email, setEmail] = useState("");
 
   const reset = () => {
     setName("");
     setUsername("");
     setPosition("");
+    setEmail("");
   };
 
   const { toast } = useToast();
@@ -45,6 +47,7 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
       name,
       username,
       position,
+      email: email.length <= 0 ? undefined : email,
       projectId: project.id,
     };
     const payload = MemberCreateProps.safeParse(member);
@@ -101,30 +104,29 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
 
         <div className="flex flex-col gap-4 py-2">
           <div className="flex flex-col gap-1">
-            <Label className="">Name</Label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className=""
-            />
+            <Label>Name</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
           </div>
 
           <div className="flex flex-col gap-1">
-            <Label className="">Username</Label>
+            <Label>Username</Label>
             <Input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className=""
             />
           </div>
 
           <div className="flex flex-col gap-1">
-            <Label className="">Position</Label>
+            <Label>Position</Label>
             <Input
               value={position}
               onChange={(e) => setPosition(e.target.value)}
-              className=""
             />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <Label>Email</Label>
+            <Input value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
 
           <DialogFooter className="gap-1">

@@ -60,6 +60,7 @@ export const MemberCreateProps = z.object({
   name: z.string().min(1),
   username: z.string().min(1),
   position: z.string().min(1),
+  email: z.string().email().optional(),
 
   projectId: z.string(),
 });
