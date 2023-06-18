@@ -216,7 +216,7 @@ export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
           <DropdownMenuItem onClick={() => navigator.clipboard.writeText("#")}>
             <Copy className="w-3 mr-2" /> Copy URL
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={sendEmail}>
+          <DropdownMenuItem disabled={!member.email} onClick={sendEmail}>
             <Mail className="mr-2 w-3" /> Deliever
           </DropdownMenuItem>
           <DropdownMenuSeparator />
