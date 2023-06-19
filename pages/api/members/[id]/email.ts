@@ -45,8 +45,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         recipients: [
           {
             id: member.id.toString(),
-            // TODO: replace with member.email once the member has email prop
-            email: "khushalbhardwaj0111@gmail.com",
+            email: member.email,
+            collection: "members",
           },
         ],
       }
