@@ -70,6 +70,7 @@ export const MemberUpdateProps = z.object({
   username: z.string().min(1),
   position: z.string().min(1),
 });
+export type MemberUpdateProps = z.infer<typeof MemberUpdateProps>;
 
 export const RequiredMemberFields = ["name", "username", "position"] as const;
 export const OptionalMemberFields = ["email"] as const;
