@@ -29,6 +29,8 @@ import {
   MemberCreateMultipleProps,
   MemberCreateRows,
   MemberFields,
+  OptionalMemberFields,
+  RequiredMemberFields,
 } from "@/lib/validators";
 import { z } from "zod";
 import { api } from "@/lib/axios";
@@ -56,7 +58,9 @@ export const AddMembersCSV: React.FC<{ project: Project }> = ({ project }) => {
     setLoading(true);
     let isEmpty = false;
     MemberFields.forEach((field) => {
-      if (!mapping[field]) isEmpty = true;
+      if (RequiredMemberFields.includes(field as any)) {
+        if (!mapping[field]) isEmpty = true;
+      }
     });
 
     if (!isEmpty && rows && cols) {
@@ -183,7 +187,13 @@ export const AddMembersCSV: React.FC<{ project: Project }> = ({ project }) => {
                     }
                   >
                     <SelectTrigger className="w-[180px] flex-[0.8]">
-                      <SelectValue placeholder="Choose" />
+                      <SelectValue
+                        placeholder={`Choose ${
+                          OptionalMemberFields.includes(field as any)
+                            ? "(optional)"
+                            : ""
+                        }`}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {cols?.map((col) => (

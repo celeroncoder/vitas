@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { ZodString, z } from "zod";
 
 export const CardEmailSendProps = z.object({
   cardUrl: z.string().url(),
@@ -71,14 +71,24 @@ export const MemberUpdateProps = z.object({
   position: z.string().min(1),
 });
 
-export const MemberFields = ["name", "username", "position"] as const;
+export const RequiredMemberFields = ["name", "username", "position"] as const;
+export const OptionalMemberFields = ["email"] as const;
+export const MemberFields = [
+  ...RequiredMemberFields,
+  ...OptionalMemberFields,
+] as const;
+
+export type OptionalMemberFields = (typeof OptionalMemberFields)[number];
+export type RequiredMemberFields = (typeof RequiredMemberFields)[number];
 export type MemberFields = (typeof MemberFields)[number];
 
 function generateRowsValidator() {
-  const shape: { [key in MemberFields]: z.ZodString } = (() => {
+  const shape: {
+    [key in MemberFields]: z.ZodOptional<ZodString>;
+  } = (() => {
     let propsObj: any = {};
     for (const key of MemberFields) {
-      propsObj[key] = z.string();
+      propsObj[key] = z.string().optional();
     }
     return propsObj;
   })();

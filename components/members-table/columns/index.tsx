@@ -52,6 +52,13 @@ export const columns: ColumnDef<Member>[] = [
     },
   },
 
+  {
+    accessorKey: "email",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Email" />;
+    },
+  },
+
   //   action col
   {
     id: "actions",
