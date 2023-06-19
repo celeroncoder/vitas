@@ -24,8 +24,6 @@ export function csvToArray(
   let rows = csv.slice(csv.indexOf("\n") + 1).split("\n");
   rows = rows.slice(0, rows.length - 1);
 
-  const arr: { [key: string]: string }[] = [];
-
   const rowObjects = rows.map((row, idx) => {
     let elms = row.split(delimiter);
     // remove any escape characters
@@ -37,8 +35,6 @@ export function csvToArray(
     let rowObj: { [key: string]: string } = {};
 
     elms.forEach((elm, idx) => (rowObj[headers[idx]] = elm));
-
-    arr.push(rowObj);
 
     return rowObj;
   });

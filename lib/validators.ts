@@ -60,7 +60,7 @@ export const MemberCreateProps = z.object({
   name: z.string().min(1),
   username: z.string().min(1),
   position: z.string().min(1),
-  email: z.string().email().optional(),
+  email: z.string().email().nullable(),
 
   projectId: z.string(),
 });
@@ -73,39 +73,25 @@ export const MemberUpdateProps = z.object({
 });
 export type MemberUpdateProps = z.infer<typeof MemberUpdateProps>;
 
-export const RequiredMemberFields = ["name", "username", "position"] as const;
-export const OptionalMemberFields = ["email"] as const;
-export const MemberFields = [
-  ...RequiredMemberFields,
-  ...OptionalMemberFields,
-] as const;
-
-export type OptionalMemberFields = (typeof OptionalMemberFields)[number];
-export type RequiredMemberFields = (typeof RequiredMemberFields)[number];
+export const MemberFields = ["name", "username", "position", "email"] as const;
 export type MemberFields = (typeof MemberFields)[number];
 
-function generateRowsValidator() {
-  const shape: {
-    [key in MemberFields]: z.ZodOptional<ZodString>;
-  } = (() => {
-    let propsObj: any = {};
-    for (const key of MemberFields) {
-      propsObj[key] = z.string().optional();
-    }
-    return propsObj;
-  })();
-
-  return z.object(shape);
-}
-
 export const MemberCreateMultipleProps = z.object({
-  rows: z.array(generateRowsValidator()),
+  rows: z
+    .object({
+      name: z.string().min(1),
+      username: z.string().min(1),
+      position: z.string().min(1),
+      email: z.string().email().nullable(),
+    })
+    .array(),
   projectId: z.string().cuid(),
 });
-
-export type MemberCreateRows = z.infer<
-  ReturnType<typeof generateRowsValidator>
+export type MemberCreateMultipleProps = z.infer<
+  typeof MemberCreateMultipleProps
 >;
+
+export type MemberCreateRows = MemberCreateMultipleProps["rows"];
 
 export const MemberDeleteManyProps = z.object({
   ids: z.number().array(),

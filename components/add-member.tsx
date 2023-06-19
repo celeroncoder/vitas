@@ -47,7 +47,7 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
       name,
       username,
       position,
-      email: email.length <= 0 ? undefined : email,
+      email: email.length <= 0 ? null : email,
       projectId: project.id,
     };
     const payload = MemberCreateProps.safeParse(member);
