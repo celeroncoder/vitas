@@ -1,7 +1,7 @@
 import { Member } from "@prisma/client";
 import { Row } from "@tanstack/react-table";
 
-import { Copy, Edit, Loader2, Mail, MoreHorizontal, Trash } from "lucide-react";
+import { Copy, Edit, Mail, MoreHorizontal, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,33 +11,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
+import { EditModal } from "./edit-modal";
+import { DeleteConfirmationModal } from "./delete-confirmation-modal";
 
 import { api } from "@/lib/axios";
 import { useState } from "react";
 import { useToast } from "../../../ui/use-toast";
-import { useRouter } from "next/navigation";
-import { EditModal } from "./edit-modal";
 
 export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
-  // TODO: use this to copy the digital id image url
   const member = row.original;
 
-  const router = useRouter();
   const { toast } = useToast();
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [deleteBtnLoading, setDeleteBtnLoading] = useState(false);
 
   const sendEmail = async () => {
     try {
@@ -56,54 +44,6 @@ export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
       });
     }
   };
-
-  const deleteMember = async () => {
-    setDeleteBtnLoading(true);
-    const res = await api.delete(`/members/${member.id}/delete`);
-
-    if (res.status === 204) {
-      // show done notification
-      toast({
-        title: "Member Deleted",
-        description: `Member, "${member.name}" removed form the project, successfully!`,
-      });
-
-      // TODO: replace this and invalidate the memeber-data-table data.
-      router.refresh();
-    } else {
-      toast({
-        title: "Uh Oh!",
-        description:
-          "There was some problem deleting the member, Please try again after some time.",
-        variant: "destructive",
-      });
-    }
-
-    // closeup
-    setDeleteBtnLoading(false);
-    setDeleteModalOpen(false);
-  };
-
-  const DeleteConfirmationModal = () => (
-    <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the
-            member from the project, and remove your data from our servers.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <Button disabled={deleteBtnLoading} onClick={deleteMember}>
-            {deleteBtnLoading && <Loader2 className="mr-2 w-4 animate-spin" />}
-            {deleteBtnLoading ? "Please Wait" : "Continue"}
-          </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
 
   return (
     <>
@@ -136,9 +76,16 @@ export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <EditModal member={member} open={editModalOpen} setOpen={setEditModalOpen} />
-      <DeleteConfirmationModal />
+      <EditModal
+        member={member}
+        open={editModalOpen}
+        setOpen={setEditModalOpen}
+      />
+      <DeleteConfirmationModal
+        member={member}
+        open={deleteModalOpen}
+        setOpen={setDeleteModalOpen}
+      />
     </>
   );
 };
-
