@@ -32,7 +32,16 @@ export const EditModal: React.FC<{
   const [name, setName] = useState(member.name);
   const [username, setUsername] = useState(member.username);
   const [position, setPosition] = useState(member.position);
+  const [email, setEmail] = useState(member.email || "");
+
   const [btnLoading, setBtnLoading] = useState(false);
+
+  const reset = () => {
+    setName(member.name);
+    setUsername(member.username);
+    setPosition(member.position);
+    setEmail(member.email || "");
+  };
 
   const save = async () => {
     setBtnLoading(true);
@@ -40,6 +49,7 @@ export const EditModal: React.FC<{
       name,
       position,
       username,
+      email: email.length <= 0 ? null : email,
     };
 
     const res = await api.put(`/members/${member.id}/update`, payload);
@@ -93,6 +103,10 @@ export const EditModal: React.FC<{
               value={position}
               onChange={(e) => setPosition(e.target.value)}
             />
+          </div>
+          <div className="flex flex-col gap-1">
+            <Label>Email</Label>
+            <Input value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
         </div>
 

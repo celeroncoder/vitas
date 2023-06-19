@@ -69,6 +69,7 @@ export const MemberUpdateProps = z.object({
   name: z.string().min(1),
   username: z.string().min(1),
   position: z.string().min(1),
+  email: z.string().email().nullable(),
 });
 export type MemberUpdateProps = z.infer<typeof MemberUpdateProps>;
 
