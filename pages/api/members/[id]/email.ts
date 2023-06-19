@@ -46,6 +46,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           {
             id: member.id.toString(),
             email: member.email,
+            name: member.name,
             collection: "members",
           },
         ],
