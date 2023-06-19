@@ -18,6 +18,7 @@ import { DeleteConfirmationModal } from "./delete-confirmation-modal";
 import { api } from "@/lib/axios";
 import { useState } from "react";
 import { useToast } from "../../../ui/use-toast";
+import { DelieverEmailConfirmationModal } from "./deliever-email-confirmation-modal";
 
 export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
   const member = row.original;
@@ -26,24 +27,7 @@ export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-
-  const sendEmail = async () => {
-    try {
-      const res = await api.post(`/members/${member.id.toString()}/email`);
-
-      if (res.status == 200)
-        toast({
-          title: "Email Sent",
-          description: `The Digital Card was successfully deliverd to ${member.name}'s email address.`,
-        });
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Uh Oh! There was a problem sending the email!",
-        variant: "destructive",
-      });
-    }
-  };
+  const [emailDelieverModalOpen, setEmailDelieverModalOpen] = useState(false);
 
   return (
     <>
@@ -59,7 +43,10 @@ export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
           <DropdownMenuItem onClick={() => navigator.clipboard.writeText("#")}>
             <Copy className="w-3 mr-2" /> Copy URL
           </DropdownMenuItem>
-          <DropdownMenuItem disabled={!member.email} onClick={sendEmail}>
+          <DropdownMenuItem
+            disabled={!member.email}
+            onClick={() => setEmailDelieverModalOpen(true)}
+          >
             <Mail className="mr-2 w-3" /> Deliever
           </DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -76,6 +63,8 @@ export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Modals */}
       <EditModal
         member={member}
         open={editModalOpen}
@@ -85,6 +74,11 @@ export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
         member={member}
         open={deleteModalOpen}
         setOpen={setDeleteModalOpen}
+      />
+      <DelieverEmailConfirmationModal
+        member={member}
+        open={emailDelieverModalOpen}
+        setOpen={setEmailDelieverModalOpen}
       />
     </>
   );
