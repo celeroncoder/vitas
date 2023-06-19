@@ -1,11 +1,17 @@
 import { prisma } from "@/lib/db";
 import {
+  CardEmailSendData,
   MemberCreateMultipleProps,
   MemberCreateProps,
   MemberUpdateProps,
 } from "@/lib/validators";
-import type { Member } from "@prisma/client";
+import { getAuth } from "@clerk/nextjs/server";
+import type { Member, Prisma } from "@prisma/client";
+import { NextApiRequest } from "next";
 import { z } from "zod";
+import { service } from ".";
+import { knock } from "@/lib/knock";
+import { getBaseUrl } from "@/lib/utils";
 
 const getAll = async (projectId: string): Promise<Member[]> => {
   return await prisma.member.findMany({ where: { projectId } });
@@ -87,6 +93,50 @@ const deleteMany = async (ids: number[]): Promise<[boolean, unknown]> => {
   }
 };
 
+export const sendEmail = async (id: Member["id"], req: NextApiRequest) => {
+  try {
+    const member = await getOne(id);
+    if (!member) return [false, new Error("Member not found.")];
+
+    const project = await service.project.getOne(member.projectId);
+    if (!project) return [false, new Error("Project not found.")];
+
+    const auth = getAuth(req);
+
+    if (auth.userId !== project.userId)
+      return [false, new Error("Unauthorized.")];
+
+    const projectOwnerName =
+      auth?.user?.firstName || auth?.user?.username || "Anonymous";
+
+    const props: CardEmailSendData = {
+      cardUrl: `${getBaseUrl()}/card/${member.id}`,
+      member: {
+        name: member.name,
+      },
+      projectDisplayName: project.displayName,
+      projectOwnerName: projectOwnerName,
+    };
+
+    const res = await knock.workflows.trigger("get-id-card-delivery", {
+      data: props,
+      recipients: [
+        {
+          id: member.id.toString(),
+          email: member.email,
+          name: member.name,
+          collection: "members",
+        },
+      ],
+    });
+
+    return [true, res];
+  } catch (error) {
+    console.error(error);
+    return [false, new Error((error as any).message || "")];
+  }
+};
+
 export const member = {
   create,
   createMany,
@@ -95,4 +145,5 @@ export const member = {
   update,
   deleteMember,
   deleteMany,
+  sendEmail,
 };

@@ -1,6 +1,6 @@
 import { ZodString, z } from "zod";
 
-export const CardEmailSendProps = z.object({
+export const CardEmailSendData = z.object({
   cardUrl: z.string().url(),
   member: z.object({
     name: z.string(),
@@ -9,7 +9,7 @@ export const CardEmailSendProps = z.object({
   projectOwnerName: z.string(),
 });
 
-export type CardEmailSendProps = z.infer<typeof CardEmailSendProps>;
+export type CardEmailSendData = z.infer<typeof CardEmailSendData>;
 
 export const StripeChecoutSessionCreateProps = z.object({
   email: z.string().email(),
