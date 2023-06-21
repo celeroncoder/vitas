@@ -1,4 +1,4 @@
-import { ZodString, z } from "zod";
+import { z } from "zod";
 
 export const CardEmailSendData = z.object({
   cardUrl: z.string().url(),

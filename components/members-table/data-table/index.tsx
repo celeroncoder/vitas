@@ -31,11 +31,12 @@ import {
 import { Button } from "../../ui/button";
 import { useEffect, useState } from "react";
 import { Input } from "../../ui/input";
-import { Eye, Loader2, Trash } from "lucide-react";
+import { Eye } from "lucide-react";
 
 import { useToast } from "../../ui/use-toast";
 import { useRouter } from "next/navigation";
 import { DeleteConfirmationModal } from "./delete-confirmation-modal";
+import { DelieverEmailConfirmationModal } from "./deliever-email-confirmation-modal";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -91,9 +92,8 @@ export function DataTable<TData, TValue>({
     else setDeleteSelectionDisabled(true);
   }, [selectedRows]);
 
-  const { toast } = useToast();
-  const router = useRouter();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [delieverEmailModalOpen, setDelieverEmailModalOpen] = useState(false);
 
   return (
     <div>
@@ -115,6 +115,11 @@ export function DataTable<TData, TValue>({
             deleteSelectionDisabled={deleteSelectionDisabled}
             selectedRows={selectedRows}
             setRowSelection={setRowSelection}
+          />
+
+          <DelieverEmailConfirmationModal
+            open={delieverEmailModalOpen}
+            setOpen={setDelieverEmailModalOpen}
           />
 
           {/* Visibility DropDown */}
