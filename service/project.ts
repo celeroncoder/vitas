@@ -1,7 +1,17 @@
 import { prisma } from "@/lib/db";
-import { ProjectCreateProps, ProjectUpdateProps } from "@/lib/validators";
-import { Project } from "@prisma/client";
+import {
+  CardEmailSendData,
+  ProjectCreateProps,
+  ProjectUpdateProps,
+} from "@/lib/validators";
+import { Member, Project } from "@prisma/client";
+import { NextApiRequest } from "next";
 import { z } from "zod";
+import { service } from ".";
+import { getBaseUrl } from "@/lib/utils";
+import { getAuth } from "@clerk/nextjs/server";
+import { TriggerWorkflowProperties } from "@knocklabs/node";
+import { knock } from "@/lib/knock";
 
 async function getAll(userId: string): Promise<Project[]> {
   return await prisma.project.findMany({ where: { userId } });
@@ -53,10 +63,63 @@ const deleteProject = async (id: string): Promise<[boolean, unknown]> => {
   }
 };
 
+const sendEmail = async (id: string, req: NextApiRequest) => {
+  try {
+    console.time();
+    const project = await getOne(id);
+    if (!project) return [false, new Error("Project not found.")];
+
+    let members = await service.member.getAll(project.id);
+    if (!members) return [false, new Error("Members not found.")];
+
+    // filtering members with email
+    members = members.filter((member) => (member.email ? true : false));
+
+    const auth = getAuth(req);
+    if (!auth) return [false, new Error("User not found.")];
+
+    const projectOwnerName =
+      auth.user?.username || auth.user?.firstName || "Anonymous Owner";
+
+    const triggerProps: TriggerWorkflowProperties[] = members.map((member) => ({
+      data: {
+        cardUrl: `${getBaseUrl()}/card/${member.id}`,
+        member: {
+          name: member.name,
+        },
+        projectDisplayName: project.displayName,
+        projectOwnerName,
+      },
+      recipients: [
+        {
+          collection: "members",
+          id: member.id.toString(),
+          email: member.email,
+          name: member.name,
+        },
+      ],
+    }));
+
+    const workflowTriggerIds: string[] = [];
+
+    for (const props of triggerProps) {
+      const res = await knock.workflows.trigger("get-id-card-delivery", props);
+      workflowTriggerIds.push(res.workflow_run_id);
+    }
+
+    console.timeEnd();
+    return [true, { count: triggerProps.length, workflowTriggerIds }];
+  } catch (error) {
+    console.error(error);
+    return [false, new Error((error as any).message || "")];
+  }
+};
+
 export const project = {
   getAll,
   create,
   update,
   getOne,
   deleteProject,
+  sendEmail,
 };

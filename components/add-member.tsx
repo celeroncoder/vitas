@@ -1,14 +1,5 @@
 "use client";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetFooter,
-} from "@/components/ui/sheet";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { useState } from "react";
@@ -21,6 +12,15 @@ import { cn } from "@/lib/utils";
 import { Project } from "@prisma/client";
 import z from "zod";
 import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+} from "./ui/dialog";
 
 export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
   const router = useRouter();
@@ -30,11 +30,13 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [position, setPosition] = useState("");
+  const [email, setEmail] = useState("");
 
   const reset = () => {
     setName("");
     setUsername("");
     setPosition("");
+    setEmail("");
   };
 
   const { toast } = useToast();
@@ -45,6 +47,7 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
       name,
       username,
       position,
+      email: email.length <= 0 ? null : email,
       projectId: project.id,
     };
     const payload = MemberCreateProps.safeParse(member);
@@ -79,8 +82,8 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
   };
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger
         className={cn(
           "group shadow-sm hover:shadow-lg duration-300",
           buttonVariants({
@@ -90,44 +93,43 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
         )}
       >
         <Plus className="w-4 mr-2" /> Add Member
-      </SheetTrigger>
-      <SheetContent size={window.screen.width <= 640 ? "full" : "lg"}>
-        <SheetHeader>
-          <SheetTitle>Add Member</SheetTitle>
-          <SheetDescription>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add Member</DialogTitle>
+          <DialogDescription>
             Add a new member to {project.name}
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         <div className="flex flex-col gap-4 py-2">
           <div className="flex flex-col gap-1">
-            <Label className="">Name</Label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className=""
-            />
+            <Label>Name</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
           </div>
 
           <div className="flex flex-col gap-1">
-            <Label className="">Username</Label>
+            <Label>Username</Label>
             <Input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className=""
             />
           </div>
 
           <div className="flex flex-col gap-1">
-            <Label className="">Position</Label>
+            <Label>Position</Label>
             <Input
               value={position}
               onChange={(e) => setPosition(e.target.value)}
-              className=""
             />
           </div>
 
-          <SheetFooter className="gap-1">
+          <div className="flex flex-col gap-1">
+            <Label>Email</Label>
+            <Input value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+
+          <DialogFooter className="gap-1">
             <Button variant={"secondary"} onClick={() => setOpen(false)}>
               Cancel
             </Button>
@@ -135,9 +137,9 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? "Please Wait" : "Add"}
             </Button>
-          </SheetFooter>
+          </DialogFooter>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };

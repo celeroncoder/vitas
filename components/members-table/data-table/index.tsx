@@ -27,25 +27,16 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "../ui/button";
+
+import { Button } from "../../ui/button";
 import { useEffect, useState } from "react";
-import { Input } from "../ui/input";
-import { Eye, Loader2, Trash } from "lucide-react";
-import { z } from "zod";
-import { MemberDeleteManyProps } from "@/lib/validators";
-import { Member } from "@prisma/client";
-import { api } from "@/lib/axios";
-import { useToast } from "../ui/use-toast";
+import { Input } from "../../ui/input";
+import { Eye } from "lucide-react";
+
+import { useToast } from "../../ui/use-toast";
 import { useRouter } from "next/navigation";
+import { DeleteConfirmationModal } from "./delete-confirmation-modal";
+import { DelieverEmailConfirmationModal } from "./deliever-email-confirmation-modal";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -58,7 +49,9 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    email: false, // hide email column by default
+  });
   //  TODO: do some mass action thing with this selection
   const [rowSelection, setRowSelection] = useState({});
 
@@ -99,61 +92,8 @@ export function DataTable<TData, TValue>({
     else setDeleteSelectionDisabled(true);
   }, [selectedRows]);
 
-  const { toast } = useToast();
-  const router = useRouter();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-
-  const DeleteConfirmationModal = () => {
-    const [deleteBtnLoading, setDeleteBtnLoading] = useState(false);
-    const deleteSelectedRows = async () => {
-      setDeleteBtnLoading(true);
-      const payload: z.infer<typeof MemberDeleteManyProps> = {
-        ids: selectedRows.map((row) => (row as Member).id),
-      };
-
-      const res = await api.post("/members/deleteMany", payload);
-
-      if (res.status === 204) {
-        toast({
-          title: "Selected Members Deleted",
-          description: "The selected Members were deleted successfully!",
-        });
-      } else
-        toast({
-          variant: "destructive",
-          title: "Some Error Occurred!",
-          description: "Uh Oh! Some problem Occurred while adding the member",
-        });
-
-      setDeleteBtnLoading(false);
-      setDeleteModalOpen(false);
-      setRowSelection({});
-      router.refresh();
-    };
-
-    return (
-      <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              members from the project, and remove your data from our servers.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <Button disabled={deleteBtnLoading} onClick={deleteSelectedRows}>
-              {deleteBtnLoading && (
-                <Loader2 className="mr-2 w-4 animate-spin" />
-              )}
-              {deleteBtnLoading ? "Please Wait" : "Continue"}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    );
-  };
+  const [delieverEmailModalOpen, setDelieverEmailModalOpen] = useState(false);
 
   return (
     <div>
@@ -170,17 +110,18 @@ export function DataTable<TData, TValue>({
         />
 
         <div className="flex items-center gap-2">
-          {/* Delete Selection */}
-          <Button
-            variant={"destructive"}
-            disabled={deleteSelectionDisabled}
-            className={"ml-auto"}
-            onClick={() => setDeleteModalOpen(true)}
-          >
-            <Trash className="w-3 mr-2" />
-            Delete
-          </Button>
-          <DeleteConfirmationModal />
+          {/* Bulk Delete */}
+          <DeleteConfirmationModal
+            deleteSelectionDisabled={deleteSelectionDisabled}
+            selectedRows={selectedRows}
+            setRowSelection={setRowSelection}
+          />
+
+          <DelieverEmailConfirmationModal
+            open={delieverEmailModalOpen}
+            setOpen={setDelieverEmailModalOpen}
+          />
+
           {/* Visibility DropDown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

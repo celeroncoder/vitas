@@ -30,7 +30,6 @@ import {
   MemberCreateRows,
   MemberFields,
 } from "@/lib/validators";
-import { z } from "zod";
 import { api } from "@/lib/axios";
 import { useRouter } from "next/navigation";
 
@@ -40,38 +39,59 @@ export const AddMembersCSV: React.FC<{ project: Project }> = ({ project }) => {
   const reader = new FileReader();
   const [file, setFile] = useState<File>();
   const [csv, setCSV] = useState<string>();
-  const [rows, setRows] = useState<{ [key: string]: string }[]>();
+  const [rows, setRows] = useState<{ [key: string]: string }[]>([]);
   const [cols, setCols] = useState<string[]>();
   const [disabled, setDisabled] = useState(true);
 
-  const [mapping, setMapping] = useState<{ [key in MemberFields]?: string }>(
-    {}
-  );
+  const [mapping, setMapping] = useState<{ [key in MemberFields]: string }>({
+    email: "",
+    name: "",
+    position: "",
+    username: "",
+  });
   const [loading, setLoading] = useState(false);
 
   const { toast } = useToast();
   const router = useRouter();
 
+  const reset = () => {
+    setFile(undefined);
+    setCSV(undefined);
+    setRows([]);
+    setCols([]);
+    setDisabled(true);
+    setMapping({
+      email: "",
+      name: "",
+      position: "",
+      username: "",
+    });
+  };
+
   const add = async () => {
     setLoading(true);
     let isEmpty = false;
     MemberFields.forEach((field) => {
-      if (!mapping[field]) isEmpty = true;
+      if (field !== "email") {
+        if (mapping[field].length <= 0) isEmpty = true;
+      }
     });
 
     if (!isEmpty && rows && cols) {
       // map
-      let mappedRows: MemberCreateRows[] = [];
+      let mappedRows: MemberCreateRows = [];
 
       mappedRows = rows.map((row) => {
         let mappedRow: any = {};
         for (const field of MemberFields) {
-          mappedRow[field] = row[mapping[field]!];
+          if (field === "email") {
+            mappedRow[field] = row[mapping[field]] || null;
+          } else mappedRow[field] = row[mapping[field]];
         }
         return mappedRow;
       });
 
-      const payload: z.infer<typeof MemberCreateMultipleProps> = {
+      const payload: MemberCreateMultipleProps = {
         rows: mappedRows,
         projectId: project.id,
       };
@@ -97,6 +117,7 @@ export const AddMembersCSV: React.FC<{ project: Project }> = ({ project }) => {
       });
 
     setLoading(false);
+    reset();
     setOpen(false);
     // TODO: replace this to invalidate or refetch the data-table data.
     router.refresh();

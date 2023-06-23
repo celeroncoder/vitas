@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CardEmailSendProps = z.object({
+export const CardEmailSendData = z.object({
   cardUrl: z.string().url(),
   member: z.object({
     name: z.string(),
@@ -9,7 +9,7 @@ export const CardEmailSendProps = z.object({
   projectOwnerName: z.string(),
 });
 
-export type CardEmailSendProps = z.infer<typeof CardEmailSendProps>;
+export type CardEmailSendData = z.infer<typeof CardEmailSendData>;
 
 export const StripeChecoutSessionCreateProps = z.object({
   email: z.string().email(),
@@ -60,6 +60,7 @@ export const MemberCreateProps = z.object({
   name: z.string().min(1),
   username: z.string().min(1),
   position: z.string().min(1),
+  email: z.string().email().nullable(),
 
   projectId: z.string(),
 });
@@ -68,31 +69,29 @@ export const MemberUpdateProps = z.object({
   name: z.string().min(1),
   username: z.string().min(1),
   position: z.string().min(1),
+  email: z.string().email().nullable(),
 });
+export type MemberUpdateProps = z.infer<typeof MemberUpdateProps>;
 
-export const MemberFields = ["name", "username", "position"] as const;
+export const MemberFields = ["name", "username", "position", "email"] as const;
 export type MemberFields = (typeof MemberFields)[number];
 
-function generateRowsValidator() {
-  const shape: { [key in MemberFields]: z.ZodString } = (() => {
-    let propsObj: any = {};
-    for (const key of MemberFields) {
-      propsObj[key] = z.string();
-    }
-    return propsObj;
-  })();
-
-  return z.object(shape);
-}
-
 export const MemberCreateMultipleProps = z.object({
-  rows: z.array(generateRowsValidator()),
+  rows: z
+    .object({
+      name: z.string().min(1),
+      username: z.string().min(1),
+      position: z.string().min(1),
+      email: z.string().email().nullable(),
+    })
+    .array(),
   projectId: z.string().cuid(),
 });
-
-export type MemberCreateRows = z.infer<
-  ReturnType<typeof generateRowsValidator>
+export type MemberCreateMultipleProps = z.infer<
+  typeof MemberCreateMultipleProps
 >;
+
+export type MemberCreateRows = MemberCreateMultipleProps["rows"];
 
 export const MemberDeleteManyProps = z.object({
   ids: z.number().array(),
