@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ThemeToggle } from "./theme-toggle";
 import { Logo } from "./logo";
 import { UserDropdownMenu } from "@/components/user-button";
 
@@ -9,10 +8,7 @@ export const Header = () => {
       <Link href="/dashboard" passHref>
         <Logo className="text-2xl" />
       </Link>
-      <div className="flex items-center gap-2">
-        <ThemeToggle />
-        <UserDropdownMenu />
-      </div>
+      <UserDropdownMenu />
     </header>
   );
 };
