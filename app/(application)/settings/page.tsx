@@ -1,3 +1,4 @@
+import { ThemeToggleCard } from "@/components/theme-toggle-card";
 import { Title } from "@/components/ui/title";
 
 export default function SettingsPage() {
@@ -7,6 +8,7 @@ export default function SettingsPage() {
         <Title className="text-3xl">General Settings</Title>
         <p className="text-muted-foreground">Manage App Settings</p>
       </div>
+      <ThemeToggleCard />
     </>
   );
 }
