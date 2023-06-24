@@ -5,17 +5,10 @@ import {
   Cloud,
   CreditCard,
   Github,
-  Keyboard,
   LifeBuoy,
   LogOut,
-  Mail,
-  MessageSquare,
-  Plus,
-  PlusCircle,
   Settings,
   UserIcon,
-  UserPlus,
-  Users,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -26,7 +19,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -80,6 +72,9 @@ export const UserDropdownMenu = () => {
             <CreditCard className="mr-2 h-4 w-4" />
             <span>Billing</span>
           </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => router.push("/settings")}>
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
