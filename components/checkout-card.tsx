@@ -62,9 +62,9 @@ export const CheckoutCard: React.FC<{
         <CardTitle>Subscription Plan</CardTitle>
         <CardDescription>
           {isSubscribed ? (
-            <p>
+            <>
               You are currently on <strong>Premium Plan</strong>
-            </p>
+            </>
           ) : (
             "Get Premium"
           )}
@@ -77,7 +77,7 @@ export const CheckoutCard: React.FC<{
           application.
         </p>
       </CardContent>
-      <CardFooter className="flex items-center justify-between flex-wrap">
+      <CardFooter className="flex items-center justify-between flex-wrap gap-4">
         <Button onClick={action}>
           {isSubscribed ? "Manage Subscription" : "Upgrade to Premium"}
         </Button>
@@ -86,7 +86,6 @@ export const CheckoutCard: React.FC<{
             {isCanceled
               ? "You plan will be cancelled on "
               : "Your plan renews on "}
-
             <strong>
               {account.stripeCurrentPeriodEnd!.toLocaleDateString("en-IN", {
                 month: "long",
@@ -94,6 +93,7 @@ export const CheckoutCard: React.FC<{
                 year: "numeric",
               })}
             </strong>
+            .
           </p>
         )}
       </CardFooter>
