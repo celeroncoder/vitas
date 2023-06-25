@@ -16,7 +16,7 @@ import {
 	SelectSeparator,
 	SelectItem,
 } from "@/components/ui/select";
-import { Laptop2, MoonStar, SunMedium } from "lucide-react";
+import { LaptopIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
 import React, { useEffect, useState } from "react";
 
@@ -62,16 +62,16 @@ export const ThemeToggleCard: React.FC<{}> = () => {
 					</SelectTrigger>
 					<SelectContent>
 						<SelectItem value="light">
-							<SunMedium className="w-3 mr-3 inline" />
+							<SunIcon className="w-3 mr-3 inline" />
 							Light
 						</SelectItem>
 						<SelectItem value="dark">
-							<MoonStar className="w-3 mr-3 inline" />
+							<MoonIcon className="w-3 mr-3 inline" />
 							Dark
 						</SelectItem>
 						<SelectSeparator />
 						<SelectItem value="system">
-							<Laptop2 className="w-3 mr-3 inline" />
+							<LaptopIcon className="w-3 mr-3 inline" />
 							System
 						</SelectItem>
 					</SelectContent>
