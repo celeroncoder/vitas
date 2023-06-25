@@ -1,30 +1,34 @@
 "use client";
 
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetFooter,
-} from "@/components/ui/sheet";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { useState } from "react";
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Loader2, Plus } from "lucide-react";
+
 import { useAuth } from "@clerk/nextjs";
-import { Button, buttonVariants } from "./ui/button";
+import { useState } from "react";
 import { ProjectCreateProps } from "@/lib/validators";
 import { api } from "@/lib/axios";
-import { useToast } from "./ui/use-toast";
-import { Loader2, Plus } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 export const CreateProject = () => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const { userId } = useAuth();
+  const { toast } = useToast();
+  const router = useRouter();
 
   const [name, setName] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -35,8 +39,6 @@ export const CreateProject = () => {
     setDisplayName("");
     setDisplayUrl("");
   };
-
-  const { toast } = useToast();
 
   const create = async () => {
     setIsLoading(true);
@@ -55,7 +57,6 @@ export const CreateProject = () => {
           title: `Project ${res.data.name} Created!`,
           description: `Project ${res.data.name} with Display Name ${res.data.displayName} was created successfully!`,
         });
-        setOpen(false);
       } else
         toast({
           title: "Some Error Occurred!",
@@ -71,11 +72,13 @@ export const CreateProject = () => {
     }
 
     setIsLoading(false);
+    setOpen(false);
+    router.refresh();
   };
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger
         className={cn(
           "group shadow-sm hover:shadow-lg duration-300",
           buttonVariants({
@@ -85,12 +88,12 @@ export const CreateProject = () => {
         )}
       >
         <Plus className="w-4 mr-2" /> Create Project
-      </SheetTrigger>
-      <SheetContent size={window.screen.width <= 640 ? "full" : "lg"}>
-        <SheetHeader>
-          <SheetTitle>Create Project</SheetTitle>
-          <SheetDescription>Create a new project</SheetDescription>
-        </SheetHeader>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create Project</DialogTitle>
+          <DialogDescription>Create a new project</DialogDescription>
+        </DialogHeader>
 
         <div className="flex flex-col gap-4 py-2">
           <div className="flex flex-col gap-1">
@@ -120,7 +123,7 @@ export const CreateProject = () => {
             />
           </div>
 
-          <SheetFooter className="gap-1">
+          <DialogFooter className="gap-1">
             <Button variant={"secondary"} onClick={() => setOpen(false)}>
               Cancel
             </Button>
@@ -128,9 +131,9 @@ export const CreateProject = () => {
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? "Please Wait" : "Create"}
             </Button>
-          </SheetFooter>
+          </DialogFooter>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };
