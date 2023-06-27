@@ -231,9 +231,7 @@ export const AddMembersCSV: React.FC<{ project: Project }> = ({ project }) => {
 						Cancel
 					</Button>
 					<Button onClick={add} size="sm" disabled={loading || disabled}>
-						{loading && (
-							<ShadowNoneIcon className="mr-2 h-4 w-4 animate-spin" />
-						)}
+						{loading && <ShadowNoneIcon className="mr-2 w-3 animate-spin" />}
 						{loading ? "Please Wait" : "Add"}
 					</Button>
 				</DialogFooter>

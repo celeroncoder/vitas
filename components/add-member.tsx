@@ -137,7 +137,7 @@ export const AddMember: React.FC<{ project: Project }> = ({ project }) => {
 						</Button>
 						<Button onClick={add} disabled={isLoading}>
 							{isLoading && (
-								<ShadowNoneIcon className="mr-2 h-4 w-4 animate-spin" />
+								<ShadowNoneIcon className="mr-2 w-3 animate-spin" />
 							)}
 							{isLoading ? "Please Wait" : "Add"}
 						</Button>

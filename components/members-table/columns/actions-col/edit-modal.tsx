@@ -119,7 +119,7 @@ export const EditModal: React.FC<{
 						Cancel
 					</Button>
 					<Button size="sm" disabled={btnLoading} onClick={save}>
-						{btnLoading && <ShadowNoneIcon className="mr-2 w-4 animate-spin" />}
+						{btnLoading && <ShadowNoneIcon className="mr-2 w-3 animate-spin" />}
 						{btnLoading ? "Please Wait" : "Save"}
 					</Button>
 				</DialogFooter>

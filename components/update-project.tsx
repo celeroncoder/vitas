@@ -114,9 +114,7 @@ export const UpdateProject: React.FC<{ project: Project }> = ({ project }) => {
 					Reset
 				</Button>
 				<Button onClick={save} disabled={isLoading || !isChange}>
-					{isLoading && (
-						<ShadowNoneIcon className="mr-2 h-4 w-4 animate-spin" />
-					)}
+					{isLoading && <ShadowNoneIcon className="mr-2 w-3 animate-spin" />}
 					{isLoading ? "Please Wait" : "Save"}
 				</Button>
 			</CardFooter>

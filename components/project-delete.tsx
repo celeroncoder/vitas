@@ -97,9 +97,7 @@ export const ProjectDeleteConfirmation: React.FC<{
 						Cancel
 					</AlertDialogCancel>
 					<Button onClick={deleteProject} disabled={isLoading || !isConfirmed}>
-						{isLoading && (
-							<ShadowNoneIcon className="mr-2 h-4 w-4 animate-spin" />
-						)}
+						{isLoading && <ShadowNoneIcon className="mr-2 w-3 animate-spin" />}
 						{isLoading ? "Please Wait" : "Confirm"}
 					</Button>
 				</AlertDialogFooter>
