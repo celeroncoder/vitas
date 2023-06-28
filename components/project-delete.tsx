@@ -3,8 +3,7 @@
 import { Project } from "@prisma/client";
 import { Button, buttonVariants } from "./ui/button";
 import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogTrigger,
@@ -15,36 +14,44 @@ import {
 	AlertDialogFooter,
 	AlertDialogCancel,
 } from "./ui/alert-dialog";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
 import { ShadowNoneIcon } from "@radix-ui/react-icons";
+
 import { api } from "@/lib/axios";
 import { useToast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
+import { z } from "zod";
+import { cn } from "@/lib/utils";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-export const ProjectDeleteConfirmation: React.FC<{
+export const ProjectDeleteConfirmationForm: React.FC<{
 	project: Project;
-	triggerClassName?: string;
-}> = ({ project, triggerClassName }) => {
+}> = ({ project }) => {
 	const [open, setOpen] = useState(false);
-	const [name, setName] = useState<string>();
-	const [isConfirmed, setIsConfirmed] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
 
-	useEffect(() => {
-		if (name === project.name) setIsConfirmed(true);
-		else setIsConfirmed(false);
+	const formSchema = z.object({
+		name: z.literal(project.name),
 	});
 
-	const onOpenChange = (open: boolean) => {
-		setName(undefined);
-		setOpen(open);
-	};
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			name: "",
+		},
+	});
 
 	const { toast } = useToast();
 	const router = useRouter();
 
-	const deleteProject = async () => {
-		setIsLoading(true);
-
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		const res = await api.delete(`/projects/${project.id}/delete`);
 
 		if (res.status === 204) {
@@ -59,14 +66,25 @@ export const ProjectDeleteConfirmation: React.FC<{
 				description: "Uh Oh! Some problem Occurred while deleting the project",
 			});
 
-		setIsLoading(false);
-		onOpenChange(false);
+		setOpen(false);
 		router.push("/dashboard");
 	};
 
 	return (
-		<AlertDialog open={open} onOpenChange={onOpenChange} defaultOpen={false}>
-			<AlertDialogTrigger className={triggerClassName}>
+		<AlertDialog
+			open={open}
+			onOpenChange={() => {
+				setOpen(!open);
+				form.reset();
+			}}
+			defaultOpen={false}
+		>
+			<AlertDialogTrigger
+				className={cn(
+					"hover:shadow-md duration-300",
+					buttonVariants({ variant: "destructive" })
+				)}
+			>
 				Delete
 			</AlertDialogTrigger>
 			<AlertDialogContent>
@@ -77,30 +95,44 @@ export const ProjectDeleteConfirmation: React.FC<{
 						members & id card will be permanently deleted from our servers.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
-				<div className="flex flex-col gap-2">
-					<Label>
-						Please enter project name, i.e.{" "}
-						<span className="font-semibold">"{project.name}"</span> to confirm.
-					</Label>
-					<Input
-						placeholder="(e.g.: 'techtrix')"
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-					/>
-				</div>
-				<AlertDialogFooter>
-					<AlertDialogCancel
-						onClick={() => setOpen(false)}
-						autoFocus
-						className={buttonVariants({ variant: "ghost" })}
-					>
-						Cancel
-					</AlertDialogCancel>
-					<Button onClick={deleteProject} disabled={isLoading || !isConfirmed}>
-						{isLoading && <ShadowNoneIcon className="mr-2 w-3 animate-spin" />}
-						{isLoading ? "Please Wait" : "Confirm"}
-					</Button>
-				</AlertDialogFooter>
+
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+						<FormField
+							control={form.control}
+							name="name"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Type the project name to confirm.</FormLabel>
+									<FormControl>
+										<Input placeholder={project.name} {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<AlertDialogFooter>
+							<AlertDialogCancel
+								type="reset"
+								className={buttonVariants({ variant: "ghost" })}
+							>
+								Cancel
+							</AlertDialogCancel>
+							<Button
+								type="submit"
+								disabled={
+									form.formState.isSubmitting || !form.formState.isValid
+								}
+							>
+								{form.formState.isSubmitting && (
+									<ShadowNoneIcon className="mr-2 w-3 animate-spin" />
+								)}
+								{form.formState.isSubmitting ? "Please Wait" : "Confirm"}
+							</Button>
+						</AlertDialogFooter>
+					</form>
+				</Form>
 			</AlertDialogContent>
 		</AlertDialog>
 	);

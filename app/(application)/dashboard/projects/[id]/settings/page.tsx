@@ -1,6 +1,5 @@
-import { ProjectDeleteConfirmation } from "@/components/project-delete";
+import { ProjectDeleteConfirmationForm } from "@/components/project-delete";
 import ProjectNotFoundPage from "@/components/project-not-found";
-import { buttonVariants } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -11,7 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Title } from "@/components/ui/title";
 import { UpdateProjectForm } from "@/components/update-project";
-import { cn } from "@/lib/utils";
 import { service } from "@/service";
 
 type ProjectSettingsPageProps = {
@@ -55,13 +53,7 @@ export default async function ProjectSettingsPage({
 					</CardDescription>
 				</CardHeader>
 				<CardFooter className="justify-end">
-					<ProjectDeleteConfirmation
-						triggerClassName={cn(
-							"hover:shadow-md duration-300",
-							buttonVariants({ variant: "destructive" })
-						)}
-						project={project}
-					/>
+					<ProjectDeleteConfirmationForm project={project} />
 				</CardFooter>
 			</Card>
 		</>

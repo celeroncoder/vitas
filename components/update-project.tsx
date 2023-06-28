@@ -16,7 +16,6 @@ import { api } from "@/lib/axios";
 import { ProjectUpdateProps } from "@/lib/validators";
 import { z } from "zod";
 import { useToast } from "./ui/use-toast";
-import { useRouter } from "next/navigation";
 import { ShadowNoneIcon } from "@radix-ui/react-icons";
 import { CardFooter } from "./ui/card";
 import { useForm } from "react-hook-form";
@@ -41,7 +40,6 @@ export const UpdateProjectForm: React.FC<{ project: Project }> = ({
 	});
 
 	const { toast } = useToast();
-	const router = useRouter();
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		const parsedPayload = ProjectUpdateProps.safeParse(values);
