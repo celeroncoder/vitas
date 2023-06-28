@@ -16,7 +16,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { EditModal } from "./edit-modal";
+import { EditModalForm } from "./edit-modal";
 import { DeleteConfirmationModal } from "./delete-confirmation-modal";
 import { DelieverEmailConfirmationModal } from "./deliever-email-confirmation-modal";
 
@@ -71,7 +71,7 @@ export const ActionsCol: React.FC<{ row: Row<Member> }> = ({ row }) => {
 			</DropdownMenu>
 
 			{/* Modals */}
-			<EditModal
+			<EditModalForm
 				member={member}
 				open={editModalOpen}
 				setOpen={setEditModalOpen}

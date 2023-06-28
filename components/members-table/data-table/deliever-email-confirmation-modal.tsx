@@ -66,7 +66,7 @@ export const DelieverEmailConfirmationModal: React.FC<{
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
 					<Button disabled={btnLoading || !params} onClick={sendEmail}>
-						{btnLoading && <ShadowNoneIcon className="mr-2 w-4 animate-spin" />}
+						{btnLoading && <ShadowNoneIcon className="mr-2 w-3 animate-spin" />}
 						{btnLoading ? "Please Wait" : "Continue"}
 					</Button>
 				</AlertDialogFooter>

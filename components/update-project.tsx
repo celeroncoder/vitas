@@ -1,59 +1,65 @@
 "use client";
 
+import {
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
 import { Project } from "@prisma/client";
-import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { api } from "@/lib/axios";
 import { ProjectUpdateProps } from "@/lib/validators";
 import { z } from "zod";
 import { useToast } from "./ui/use-toast";
-import { useRouter } from "next/navigation";
 import { ShadowNoneIcon } from "@radix-ui/react-icons";
-import { CardContent, CardFooter } from "./ui/card";
+import { CardFooter } from "./ui/card";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-export const UpdateProject: React.FC<{ project: Project }> = ({ project }) => {
-	const [name, setName] = useState(project.name);
-	const [displayName, setDisplayName] = useState(project.displayName);
-	const [displayUrl, setDisplayUrl] = useState(project.displayUrl);
+const formSchema = z.object({
+	name: z.string().min(3),
+	displayName: z.string().min(3),
+	displayUrl: z.string().optional(),
+});
 
-	const [isChange, setIsChange] = useState(false);
-
-	useEffect(() => {
-		if (
-			name !== project.name ||
-			displayName !== project.displayName ||
-			displayUrl !== project.displayUrl
-		)
-			setIsChange(true);
-		else setIsChange(false);
-	}, [name, displayName, displayUrl]);
-
-	const reset = () => {
-		setName(project.name);
-		setDisplayName(project.displayName);
-		setDisplayUrl(project.displayUrl);
-	};
+export const UpdateProjectForm: React.FC<{ project: Project }> = ({
+	project,
+}) => {
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			name: project.name,
+			displayName: project.displayName,
+			displayUrl: project.displayUrl ? project.displayUrl : undefined,
+		},
+	});
 
 	const { toast } = useToast();
-	const router = useRouter();
-	const [isLoading, setIsLoading] = useState(false);
 
-	const save = async () => {
-		setIsLoading(true);
-		const payload: z.infer<typeof ProjectUpdateProps> = {
-			displayName,
-			name,
-			displayUrl: displayUrl ? displayUrl : undefined,
-		};
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		const parsedPayload = ProjectUpdateProps.safeParse(values);
 
-		const res = await api.put(`/projects/${project.id}/update`, payload);
+		if (!parsedPayload.success) {
+			toast({
+				title: "Some Error Occurred!",
+				description: "Uh Oh! Some problem Occurred while creating the project",
+				variant: "destructive",
+			});
+			form.reset();
+			return;
+		}
+
+		const res = await api.put(`/projects/${project.id}/update`, values);
 
 		if (res.status == 200)
 			toast({
 				title: "Project Updated Successfully!",
-				description: `Project, "${name}" updated successfully!`,
+				description: `Project, "${values.name}" updated successfully!`,
 			});
 		else
 			toast({
@@ -62,64 +68,85 @@ export const UpdateProject: React.FC<{ project: Project }> = ({ project }) => {
 				variant: "destructive",
 			});
 
-		setIsLoading(false);
-		setIsChange(false);
-		router.push(`/dashboard/projects/${project.id}`);
+		form.reset();
+		// TODO: Invalidate query here instead.
+		window.location.reload();
 	};
 
 	return (
-		<>
-			<CardContent className="flex flex-col gap-4">
-				{/* name */}
-				<div className="flex flex-col gap-1">
-					<Label className="">Name</Label>
-					<Input value={name} onChange={(e) => setName(e.target.value)} />
-					<p className="text-sm text-muted-foreground">
-						This is the main name of the project, that is shown on the
-						dashboard.
-					</p>
-				</div>
-
-				{/* display name */}
-				<div className="flex flex-col gap-1">
-					<Label className="">Display Name</Label>
-					<Input
-						value={displayName}
-						onChange={(e) => setDisplayName(e.target.value)}
-					/>
-					<p className="text-sm text-muted-foreground">
-						This is the name of the project, that is displayed on the ID Card
-						Itself.
-					</p>
-				</div>
-
-				{/* display url */}
-				<div className="flex flex-col gap-1">
-					<Label className="">Display URL</Label>
-					<Input
-						value={displayUrl || ""}
-						onChange={(e) =>
-							setDisplayUrl(e.target.value === "" ? null : e.target.value)
-						}
-					/>
-					<p className="text-sm text-muted-foreground">
-						This will be displayed on the ID Card, add your social media handel,
-						website url or any tagline you want to display.
-					</p>
-				</div>
-			</CardContent>
-
-			<CardFooter className="justify-end gap-2">
-				<Button onClick={reset} disabled={!isChange} variant={"secondary"}>
-					Reset
-				</Button>
-				<Button onClick={save} disabled={isLoading || !isChange}>
-					{isLoading && (
-						<ShadowNoneIcon className="mr-2 h-4 w-4 animate-spin" />
+		<Form {...form}>
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+				<FormField
+					control={form.control}
+					name="name"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Name</FormLabel>
+							<FormControl>
+								<Input placeholder="Acme" {...field} />
+							</FormControl>
+							<FormDescription className="text-sm">
+								This is your display name on the dashboard.
+							</FormDescription>
+							<FormMessage />
+						</FormItem>
 					)}
-					{isLoading ? "Please Wait" : "Save"}
-				</Button>
-			</CardFooter>
-		</>
+				/>
+
+				<FormField
+					control={form.control}
+					name="displayName"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Display Name</FormLabel>
+							<FormControl>
+								<Input placeholder="ACME.INC" {...field} />
+							</FormControl>
+							<FormDescription className="text-sm">
+								This is your display name on the card.
+							</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="displayUrl"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Display Url</FormLabel>
+							<FormControl>
+								<Input placeholder="acme.com" {...field} />
+							</FormControl>
+							<FormDescription className="text-sm">
+								This is your display url on the card.
+							</FormDescription>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<CardFooter className="justify-end gap-2">
+					<Button
+						type="reset"
+						onClick={() => form.reset()}
+						disabled={!form.formState.isDirty}
+						variant={"secondary"}
+					>
+						Reset
+					</Button>
+					<Button
+						type="submit"
+						disabled={form.formState.isSubmitting || !form.formState.isDirty}
+					>
+						{form.formState.isSubmitting && (
+							<ShadowNoneIcon className="mr-2 w-3 animate-spin" />
+						)}
+						{form.formState.isSubmitting ? "Please Wait" : "Save"}
+					</Button>
+				</CardFooter>
+			</form>
+		</Form>
 	);
 };

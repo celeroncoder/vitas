@@ -8,20 +8,38 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { ShadowNoneIcon } from "@radix-ui/react-icons";
 
 import { useToast } from "@/components/ui/use-toast";
 import { api } from "@/lib/axios";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 import { MemberUpdateProps } from "@/lib/validators";
 import { Member } from "@prisma/client";
-import { ShadowNoneIcon } from "@radix-ui/react-icons";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-export const EditModal: React.FC<{
+const DEFAULT_MEMBER_EMAIL = "user@example.com";
+
+const formSchema = z.object({
+	name: z.string().min(1),
+	username: z.string().min(1),
+	position: z.string().min(1),
+	email: z.string().default(DEFAULT_MEMBER_EMAIL),
+});
+
+export const EditModalForm: React.FC<{
 	member: Member;
 	open: boolean;
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -29,41 +47,65 @@ export const EditModal: React.FC<{
 	const router = useRouter();
 	const { toast } = useToast();
 
-	const [name, setName] = useState(member.name);
-	const [username, setUsername] = useState(member.username);
-	const [position, setPosition] = useState(member.position);
-	const [email, setEmail] = useState(member.email || "");
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			name: member.name,
+			username: member.username,
+			position: member.position,
+			email: member.email || DEFAULT_MEMBER_EMAIL,
+		},
+	});
 
-	const [btnLoading, setBtnLoading] = useState(false);
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		const processEmail = () => {
+			if (values.email == DEFAULT_MEMBER_EMAIL) return null;
 
-	const reset = () => {
-		setName(member.name);
-		setUsername(member.username);
-		setPosition(member.position);
-		setEmail(member.email || "");
-	};
+			const parsedEmail = z.string().email().safeParse(values.email);
 
-	const save = async () => {
-		setBtnLoading(true);
-		const payload: MemberUpdateProps = {
-			name,
-			position,
-			username,
-			email: email.length <= 0 ? null : email,
+			if (!parsedEmail.success) return null;
+
+			return parsedEmail.data;
 		};
 
-		const res = await api.put(`/members/${member.id}/update`, payload);
+		const payload = MemberUpdateProps.safeParse({
+			...values,
+			email: processEmail(),
+		});
 
-		if (res.status === 200) {
-			// show done notification
+		if (!payload.success) {
 			toast({
-				title: "Member Updated",
-				description: `Member, "${member.name}" updated successfully!`,
+				title: "Uh Oh!",
+				description:
+					"Please check the form again, there seems to be some error.",
+				variant: "destructive",
 			});
+			form.reset();
+			setOpen(false);
+			return;
+		}
 
-			// TODO: replace this and invalidate the memeber-data-table data.
-			router.refresh();
-		} else {
+		try {
+			const res = await api.put(`/members/${member.id}/update`, payload.data);
+
+			if (res.status === 200) {
+				// show done notification
+				toast({
+					title: "Member Updated",
+					description: `Member, "${member.name}" updated successfully!`,
+				});
+
+				// TODO: replace this and invalidate the memeber-data-table data.
+				router.refresh();
+			} else {
+				toast({
+					title: "Uh Oh!",
+					description:
+						"There was some problem updating the member, Please try again after some time.",
+					variant: "destructive",
+				});
+			}
+		} catch (err) {
 			toast({
 				title: "Uh Oh!",
 				description:
@@ -72,7 +114,7 @@ export const EditModal: React.FC<{
 			});
 		}
 
-		setBtnLoading(false);
+		form.reset();
 		setOpen(false);
 	};
 
@@ -85,44 +127,90 @@ export const EditModal: React.FC<{
 						Make changes to the member here. Click save when you're done.
 					</DialogDescription>
 				</DialogHeader>
-				<div className="flex flex-col gap-4">
-					<div className="flex flex-col gap-1">
-						<Label>Name</Label>
-						<Input value={name} onChange={(e) => setName(e.target.value)} />
-					</div>
-					<div className="flex flex-col gap-1">
-						<Label>Username</Label>
-						<Input
-							value={username}
-							onChange={(e) => setUsername(e.target.value)}
-						/>
-					</div>
-					<div className="flex flex-col gap-1">
-						<Label>Position</Label>
-						<Input
-							value={position}
-							onChange={(e) => setPosition(e.target.value)}
-						/>
-					</div>
-					<div className="flex flex-col gap-1">
-						<Label>Email</Label>
-						<Input value={email} onChange={(e) => setEmail(e.target.value)} />
-					</div>
-				</div>
 
-				<DialogFooter>
-					<Button
-						size="sm"
-						variant={"secondary"}
-						onClick={() => setOpen(false)}
-					>
-						Cancel
-					</Button>
-					<Button size="sm" disabled={btnLoading} onClick={save}>
-						{btnLoading && <ShadowNoneIcon className="mr-2 w-4 animate-spin" />}
-						{btnLoading ? "Please Wait" : "Save"}
-					</Button>
-				</DialogFooter>
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+						<FormField
+							control={form.control}
+							name="name"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Name</FormLabel>
+									<FormControl>
+										<Input placeholder="Khushal Bhardwaj" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="username"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Username</FormLabel>
+									<FormControl>
+										<Input placeholder="celeroncoder" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="position"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Position</FormLabel>
+									<FormControl>
+										<Input placeholder="Founder & CEO" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="email"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Email</FormLabel>
+									<FormControl>
+										<Input placeholder="me@example.com" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<DialogFooter>
+							<Button
+								size="sm"
+								variant={"secondary"}
+								onClick={() => {
+									setOpen(false);
+									form.reset();
+								}}
+								type="reset"
+							>
+								Cancel
+							</Button>
+							<Button
+								size="sm"
+								disabled={form.formState.isSubmitting}
+								type="submit"
+							>
+								{form.formState.isSubmitting && (
+									<ShadowNoneIcon className="mr-2 w-3 animate-spin" />
+								)}
+								{form.formState.isSubmitting ? "Please Wait" : "Save"}
+							</Button>
+						</DialogFooter>
+					</form>
+				</Form>
 			</DialogContent>
 		</Dialog>
 	);

@@ -86,7 +86,7 @@ export function DeleteConfirmationModal<TData>({
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
 					<Button disabled={deleteBtnLoading} onClick={deleteSelectedRows}>
 						{deleteBtnLoading && (
-							<ShadowNoneIcon className="mr-2 w-4 animate-spin" />
+							<ShadowNoneIcon className="mr-2 w-3 animate-spin" />
 						)}
 						{deleteBtnLoading ? "Please Wait" : "Continue"}
 					</Button>

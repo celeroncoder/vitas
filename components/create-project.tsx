@@ -9,8 +9,16 @@ import {
 	DialogDescription,
 	DialogFooter,
 } from "@/components/ui/dialog";
+import {
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ShadowNoneIcon, PlusIcon } from "@radix-ui/react-icons";
 
@@ -21,57 +29,62 @@ import { api } from "@/lib/axios";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
 
-export const CreateProject = () => {
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const formSchema = z.object({
+	name: z.string().min(3),
+	displayName: z.string().min(3),
+	displayUrl: z.string().min(3).optional(),
+});
+
+export const CreateProjectForm = () => {
 	const [open, setOpen] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
 
 	const { userId } = useAuth();
 	const { toast } = useToast();
 	const router = useRouter();
 
-	const [name, setName] = useState("");
-	const [displayName, setDisplayName] = useState("");
-	const [displayUrl, setDisplayUrl] = useState("");
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			name: "",
+			displayName: "",
+			displayUrl: "",
+		},
+	});
 
-	const reset = () => {
-		setName("");
-		setDisplayName("");
-		setDisplayUrl("");
-	};
-
-	const create = async () => {
-		setIsLoading(true);
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		const payload = ProjectCreateProps.safeParse({
-			name,
-			displayName,
-			displayUrl,
+			...values,
 			userId: userId!,
 		});
 
-		if (payload.success) {
-			const res = await api.post("/projects/create", payload.data);
-			if (res.status == 201) {
-				reset();
-				toast({
-					title: `Project ${res.data.name} Created!`,
-					description: `Project ${res.data.name} with Display Name ${res.data.displayName} was created successfully!`,
-				});
-			} else
-				toast({
-					title: "Some Error Occurred!",
-					description:
-						"Uh Oh! Some problem Occurred while creating the project",
-				});
-		} else {
+		if (!payload.success) {
 			toast({
 				title: "Please Provide Correct Data",
 				description:
 					"Invalid Details for the project Provided, please change them",
+				variant: "destructive",
 			});
+			return;
 		}
 
-		setIsLoading(false);
+		const res = await api.post("/projects/create", payload.data);
+		if (res.status == 201) {
+			toast({
+				title: `Project ${res.data.name} Created!`,
+				description: `Project ${res.data.name} with Display Name ${res.data.displayName} was created successfully!`,
+			});
+		} else
+			toast({
+				title: "Some Error Occurred!",
+				description: "Uh Oh! Some problem Occurred while creating the project",
+			});
+
+		form.reset();
 		setOpen(false);
 		router.refresh();
 	};
@@ -95,46 +108,79 @@ export const CreateProject = () => {
 					<DialogDescription>Create a new project</DialogDescription>
 				</DialogHeader>
 
-				<div className="flex flex-col gap-4 py-2">
-					<div className="flex flex-col gap-1">
-						<Label className="">Name</Label>
-						<Input
-							value={name}
-							onChange={(e) => setName(e.target.value)}
-							className=""
-						/>
-					</div>
-
-					<div className="flex flex-col gap-1">
-						<Label className="">Display Name</Label>
-						<Input
-							value={displayName}
-							onChange={(e) => setDisplayName(e.target.value)}
-							className=""
-						/>
-					</div>
-
-					<div className="flex flex-col gap-1">
-						<Label className="">Display URL</Label>
-						<Input
-							value={displayUrl}
-							onChange={(e) => setDisplayUrl(e.target.value)}
-							className=""
-						/>
-					</div>
-
-					<DialogFooter className="gap-1">
-						<Button variant={"secondary"} onClick={() => setOpen(false)}>
-							Cancel
-						</Button>
-						<Button onClick={create} disabled={isLoading}>
-							{isLoading && (
-								<ShadowNoneIcon className="mr-2 h-4 w-4 animate-spin" />
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+						<FormField
+							control={form.control}
+							name="name"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Name</FormLabel>
+									<FormControl>
+										<Input placeholder="Acme" {...field} />
+									</FormControl>
+									<FormDescription className="text-sm">
+										This is your display name on the dashboard.
+									</FormDescription>
+									<FormMessage />
+								</FormItem>
 							)}
-							{isLoading ? "Please Wait" : "Create"}
-						</Button>
-					</DialogFooter>
-				</div>
+						/>
+
+						<FormField
+							control={form.control}
+							name="displayName"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Display Name</FormLabel>
+									<FormControl>
+										<Input placeholder="ACME.INC" {...field} />
+									</FormControl>
+									<FormDescription className="text-sm">
+										This is your display name on the card.
+									</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="displayUrl"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Display Url</FormLabel>
+									<FormControl>
+										<Input placeholder="acme.com" {...field} />
+									</FormControl>
+									<FormDescription className="text-sm">
+										This is your display url on the card.
+									</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<DialogFooter className="gap-1">
+							<Button
+								variant={"secondary"}
+								type="reset"
+								onClick={() => {
+									setOpen(false);
+									form.reset();
+								}}
+							>
+								Cancel
+							</Button>
+							<Button type="submit" disabled={form.formState.isSubmitting}>
+								{form.formState.isSubmitting && (
+									<ShadowNoneIcon className="mr-2 w-3 animate-spin" />
+								)}
+								{form.formState.isSubmitting ? "Please Wait" : "Create"}
+							</Button>
+						</DialogFooter>
+					</form>
+				</Form>
 			</DialogContent>
 		</Dialog>
 	);
