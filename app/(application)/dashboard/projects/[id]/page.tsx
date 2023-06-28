@@ -1,4 +1,4 @@
-import { AddMember, AddMemberForm } from "@/components/add-member";
+import { AddMemberForm } from "@/components/add-member";
 import { AddMembersCSV } from "@/components/add-members-csv";
 import { MembersTable } from "@/components/members-table";
 import ProjectNotFoundPage from "@/components/project-not-found";

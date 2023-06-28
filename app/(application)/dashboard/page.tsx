@@ -1,4 +1,4 @@
-import { CreateProject, CreateProjectForm } from "@/components/create-project";
+import { CreateProjectForm } from "@/components/create-project";
 import { ProjectGrid } from "@/components/project-grid";
 import { Title } from "@/components/ui/title";
 import { service } from "@/service";
