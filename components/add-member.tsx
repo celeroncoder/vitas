@@ -45,7 +45,6 @@ const formSchema = z.object({
 export const AddMemberForm: React.FC<{ project: Project }> = ({ project }) => {
 	const router = useRouter();
 	const [open, setOpen] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -60,8 +59,6 @@ export const AddMemberForm: React.FC<{ project: Project }> = ({ project }) => {
 	const { toast } = useToast();
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		setIsLoading(true);
-
 		const processEmail = () => {
 			if (values.email == DEFAULT_MEMBER_EMAIL) return null;
 
@@ -104,7 +101,6 @@ export const AddMemberForm: React.FC<{ project: Project }> = ({ project }) => {
 		}
 
 		form.reset();
-		setIsLoading(false);
 	};
 
 	return (
@@ -197,11 +193,11 @@ export const AddMemberForm: React.FC<{ project: Project }> = ({ project }) => {
 							>
 								Cancel
 							</Button>
-							<Button type="submit" disabled={isLoading}>
-								{isLoading && (
+							<Button type="submit" disabled={form.formState.isSubmitting}>
+								{form.formState.isSubmitting && (
 									<ShadowNoneIcon className="mr-2 w-3 animate-spin" />
 								)}
-								{isLoading ? "Please Wait" : "Add"}
+								{form.formState.isSubmitting ? "Please Wait" : "Add"}
 							</Button>
 						</DialogFooter>
 					</form>

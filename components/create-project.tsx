@@ -42,7 +42,6 @@ const formSchema = z.object({
 
 export const CreateProjectForm = () => {
 	const [open, setOpen] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
 
 	const { userId } = useAuth();
 	const { toast } = useToast();
@@ -58,8 +57,6 @@ export const CreateProjectForm = () => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		setIsLoading(true);
-
 		const payload = ProjectCreateProps.safeParse({
 			...values,
 			userId: userId!,
@@ -87,7 +84,6 @@ export const CreateProjectForm = () => {
 				description: "Uh Oh! Some problem Occurred while creating the project",
 			});
 
-		setIsLoading(false);
 		form.reset();
 		setOpen(false);
 		router.refresh();
@@ -176,11 +172,11 @@ export const CreateProjectForm = () => {
 							>
 								Cancel
 							</Button>
-							<Button type="submit" disabled={isLoading}>
-								{isLoading && (
+							<Button type="submit" disabled={form.formState.isSubmitting}>
+								{form.formState.isSubmitting && (
 									<ShadowNoneIcon className="mr-2 w-3 animate-spin" />
 								)}
-								{isLoading ? "Please Wait" : "Create"}
+								{form.formState.isSubmitting ? "Please Wait" : "Create"}
 							</Button>
 						</DialogFooter>
 					</form>
