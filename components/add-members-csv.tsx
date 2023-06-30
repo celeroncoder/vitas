@@ -9,10 +9,18 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
 import { Button, buttonVariants } from "./ui/button";
 import { ShadowNoneIcon, UploadIcon } from "@radix-ui/react-icons";
 import { Project } from "@prisma/client";
-import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import {
 	Select,
@@ -32,84 +40,106 @@ import { api } from "@/lib/axios";
 import { cn, csvToArray } from "@/lib/utils";
 
 import { useToast } from "./ui/use-toast";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-export const AddMembersCSV: React.FC<{ project: Project }> = ({ project }) => {
+const formSchema = z.object({
+	file: z.instanceof(File),
+	mapping: z.object({
+		name: z.string(),
+		username: z.string(),
+		position: z.string(),
+		email: z.string().nullable(),
+	}),
+});
+
+const reader = new FileReader();
+
+export const AddMembersCSVForm: React.FC<{ project: Project }> = ({
+	project,
+}) => {
 	const [open, setOpen] = useState(false);
 
-	const reader = new FileReader();
-	const [file, setFile] = useState<File>();
-	const [csv, setCSV] = useState<string>();
-	const [rows, setRows] = useState<{ [key: string]: string }[]>([]);
-	const [cols, setCols] = useState<string[]>();
-	const [disabled, setDisabled] = useState(true);
-
-	const [mapping, setMapping] = useState<{ [key in MemberFields]: string }>({
-		email: "",
-		name: "",
-		position: "",
-		username: "",
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			mapping: {
+				name: "",
+				username: "",
+				position: "",
+				email: null,
+			},
+		},
 	});
-	const [loading, setLoading] = useState(false);
+
+	const [rows, setRows] = useState<{ [key: string]: string }[]>();
+	const [cols, setCols] = useState<string[]>();
 
 	const { toast } = useToast();
 	const router = useRouter();
 
 	const reset = () => {
-		setFile(undefined);
-		setCSV(undefined);
-		setRows([]);
-		setCols([]);
-		setDisabled(true);
-		setMapping({
-			email: "",
-			name: "",
-			position: "",
-			username: "",
-		});
+		form.reset();
+		setCols(undefined);
+		setRows(undefined);
 	};
 
-	const add = async () => {
-		setLoading(true);
-		let isEmpty = false;
-		MemberFields.forEach((field) => {
-			if (field !== "email") {
-				if (mapping[field].length <= 0) isEmpty = true;
-			}
-		});
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		if (rows && cols) {
+			try {
+				let mappedRows: MemberCreateRows = [];
 
-		if (!isEmpty && rows && cols) {
-			// map
-			let mappedRows: MemberCreateRows = [];
+				mappedRows = rows.map((row) => {
+					let mappedRow: MemberCreateRows[number] = {
+						name: "",
+						username: "",
+						position: "",
+						email: null,
+					};
 
-			mappedRows = rows.map((row) => {
-				let mappedRow: any = {};
-				for (const field of MemberFields) {
-					if (field === "email") {
-						mappedRow[field] = row[mapping[field]] || null;
-					} else mappedRow[field] = row[mapping[field]];
-				}
-				return mappedRow;
-			});
+					for (const field of MemberFields) {
+						const fieldValue = row[values.mapping[field] as keyof typeof row];
+						if (fieldValue !== null && fieldValue !== undefined) {
+							mappedRow[field] = fieldValue;
+						}
+					}
 
-			const payload: MemberCreateMultipleProps = {
-				rows: mappedRows,
-				projectId: project.id,
-			};
-
-			const res = await api.post("/members/createMany", payload);
-
-			if (res.status == 201) {
-				toast({
-					title: `${res.data.count} Members Added!`,
-					description: `Members were added from the csv with the specified column mapping successfully!`,
+					return mappedRow;
 				});
-			} else
+
+				const payload: MemberCreateMultipleProps = {
+					rows: mappedRows,
+					projectId: project.id,
+				};
+
+				const res = await api.post("/members/createMany", payload);
+
+				if (res.status == 201) {
+					toast({
+						title: `${res.data.count} Members Added!`,
+						description: `Members were added from the csv with the specified column mapping successfully!`,
+					});
+				} else
+					toast({
+						title: "Some Error Occurred!",
+						description:
+							"Uh Oh! Some problem Occurred while adding the members",
+					});
+			} catch (err) {
 				toast({
 					title: "Some Error Occurred!",
 					description: "Uh Oh! Some problem Occurred while adding the members",
+					variant: "destructive",
 				});
+			} finally {
+				reset();
+				setOpen(false);
+				// TODO: replace this to invalidate or refetch the data-table data.
+				router.refresh();
+			}
 		} else
 			toast({
 				title: "Mapping Incomplete",
@@ -117,35 +147,24 @@ export const AddMembersCSV: React.FC<{ project: Project }> = ({ project }) => {
 					"Please map each memeber field with a column to add multiple members.",
 				variant: "destructive",
 			});
-
-		setLoading(false);
-		reset();
-		setOpen(false);
-		// TODO: replace this to invalidate or refetch the data-table data.
-		router.refresh();
 	};
 
-	useEffect(() => {
-		if (rows && cols) setDisabled(false);
-	}, [rows, cols]);
+	const readFile = () => {
+		const file = form.watch("file");
 
-	useEffect(() => {
-		if (csv) {
-			const [rows, cols] = csvToArray(csv);
-			setRows(rows);
-			setCols(cols);
-		}
-	}, [csv]);
-
-	useEffect(() => {
 		if (file) {
 			reader.onload = (e) => {
 				let res = e.target?.result;
-				if (typeof res === "string") setCSV(res);
+				if (typeof res === "string") {
+					const [rows, cols] = csvToArray(res);
+					setRows(rows);
+					setCols(cols);
+				}
 			};
+
 			reader.readAsText(file);
 		}
-	}, [file]);
+	};
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -168,25 +187,40 @@ export const AddMembersCSV: React.FC<{ project: Project }> = ({ project }) => {
 					</DialogDescription>
 				</DialogHeader>
 
-				<div className="flex flex-col gap-4">
-					{/* file input */}
-					<div className="flex flex-col gap-2">
-						<Label>Upload CSV</Label>
-						{/* // TODO: add input to enter the url of a google sheet (to support cloud based sheets) */}
-						<Input
-							onChange={(e) => setFile(e.target.files![0])}
-							type="file"
-							accept=".csv"
-							multiple={false}
-						/>
-						<p className="text-sm text-muted-foreground">
-							Upload the file from which you want to add multiple members.
-						</p>
-					</div>
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)}>
+						<section className="mb-2">
+							<FormField
+								control={form.control}
+								name="file"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Upload File</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Upload CSV File"
+												{...field}
+												type="file"
+												accept=".csv"
+												value={undefined}
+												onChange={(e) => {
+													e.target.files &&
+														form.setValue("file", e.target.files[0]);
+													readFile();
+												}}
+											/>
+										</FormControl>
+										<FormDescription>
+											Upload the file from which you want to add multiple
+											members.
+										</FormDescription>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</section>
 
-					{/* Mappers */}
-					{!disabled && (
-						<>
+						<section className="mb-2 animate-in duratio-300">
 							<div>
 								<Separator className="mb-2" />
 								<p className="text-sm text-muted-foreground">
@@ -194,47 +228,77 @@ export const AddMembersCSV: React.FC<{ project: Project }> = ({ project }) => {
 								</p>
 							</div>
 
-							{MemberFields.map((field) => (
-								<div key={field} className="flex gap-4 items-center w-full">
-									<Label className="capitalize flex-[0.2]">{field}</Label>
-									<Select
-										onValueChange={(val) =>
-											setMapping((mapping) => {
-												mapping[field] = val;
-												return mapping;
-											})
-										}
-									>
-										<SelectTrigger className="w-[180px] flex-[0.8]">
-											<SelectValue placeholder="Choose" />
-										</SelectTrigger>
-										<SelectContent>
-											{cols?.map((col) => (
-												<SelectItem value={col} key={col}>
-													{col} (column)
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</div>
+							{MemberFields.map((fieldName) => (
+								<FormField
+									key={fieldName}
+									control={form.control}
+									name={`mapping.${fieldName}`}
+									render={({ field }) => (
+										<FormItem className="flex items-center gap-2">
+											<FormLabel className="mt-2 min-w-[100px] capitalize h-full">
+												{fieldName}
+											</FormLabel>
+											<FormControl className="flex-1 my-0">
+												<Select
+													{...field}
+													value={field.value || undefined}
+													onValueChange={(val) =>
+														form.setValue(`mapping.${fieldName}`, val)
+													}
+												>
+													<SelectTrigger className="w-[180px] flex-[0.8]">
+														<SelectValue placeholder="Choose" />
+													</SelectTrigger>
+													<SelectContent>
+														{(!cols || cols.length <= 0) && (
+															<SelectItem value={""} disabled>
+																No Columns Found
+															</SelectItem>
+														)}
+														{cols &&
+															cols.length > 0 &&
+															cols.map((col) => (
+																<SelectItem value={col} key={col}>
+																	{col} (column)
+																</SelectItem>
+															))}
+													</SelectContent>
+												</Select>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
 							))}
-						</>
-					)}
-				</div>
+						</section>
 
-				<DialogFooter>
-					<Button
-						size="sm"
-						variant={"secondary"}
-						onClick={() => setOpen(false)}
-					>
-						Cancel
-					</Button>
-					<Button onClick={add} size="sm" disabled={loading || disabled}>
-						{loading && <ShadowNoneIcon className="mr-2 w-3 animate-spin" />}
-						{loading ? "Please Wait" : "Add"}
-					</Button>
-				</DialogFooter>
+						<DialogFooter>
+							<Button
+								size="sm"
+								variant={"secondary"}
+								type="reset"
+								onClick={() => {
+									setOpen(false);
+									form.reset();
+								}}
+							>
+								Cancel
+							</Button>
+							<Button
+								type="submit"
+								size="sm"
+								disabled={
+									form.formState.isSubmitting || form.formState.dirtyFields.file
+								}
+							>
+								{form.formState.isSubmitting && (
+									<ShadowNoneIcon className="mr-2 w-3 animate-spin" />
+								)}
+								{form.formState.isSubmitting ? "Please Wait" : "Add"}
+							</Button>
+						</DialogFooter>
+					</form>
+				</Form>
 			</DialogContent>
 		</Dialog>
 	);

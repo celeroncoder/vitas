@@ -1,5 +1,5 @@
 import { AddMemberForm } from "@/components/add-member";
-import { AddMembersCSV } from "@/components/add-members-csv";
+import { AddMembersCSVForm } from "@/components/add-members-csv";
 import { MembersTable } from "@/components/members-table";
 import ProjectNotFoundPage from "@/components/project-not-found";
 import { Separator } from "@/components/ui/separator";
@@ -26,7 +26,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 					<Title className="text-2xl">Your Members</Title>
 				</div>
 				<div className="flex items-center gap-2">
-					<AddMembersCSV project={project} />
+					<AddMembersCSVForm project={project} />
 					<AddMemberForm project={project} />
 				</div>
 			</div>
