@@ -25,7 +25,7 @@ const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
 					href={`/dashboard/projects/${project.id}`}
 					className={buttonVariants({ variant: "default", size: "sm" })}
 				>
-					Visit <ChevronRightIcon className="w-4 ml-2" />
+					Visit <ChevronRightIcon />
 				</Link>
 			</CardFooter>
 		</Card>

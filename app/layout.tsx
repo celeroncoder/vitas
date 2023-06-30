@@ -1,9 +1,10 @@
 import { Toaster } from "@/components/ui/toaster";
-import { inter } from "@/lib/fonts";
+import { general_sans, satoshi, space_grotesk, space_mono } from "@/lib/fonts";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { neobrutalism } from "@clerk/themes";
 import { ThemeProvider } from "@/components/theme-provider";
+import { cn } from "@/lib/utils";
 
 export const metadata = {
 	title: "get.id",
@@ -19,8 +20,13 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body
-				style={inter.style}
-				className="scrollbar-thin scrollbar-thumb-rounded-sm scrollbar-thumb-lime-200/75 scrollbar-track-background scroll-smooth"
+				className={cn(
+					"scrollbar-thin scrollbar-thumb-rounded-sm scrollbar-thumb-lime-200/75 scrollbar-track-background scroll-smooth",
+					general_sans.variable,
+					satoshi.variable,
+					space_mono.variable,
+					space_grotesk.variable
+				)}
 			>
 				<ClerkProvider
 					appearance={{
