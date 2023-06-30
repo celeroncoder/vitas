@@ -52,7 +52,7 @@ export const UserDropdownMenu = () => {
 						<AvatarImage src={user.imageUrl} />
 						<AvatarFallback>{user.username}</AvatarFallback>
 					</Avatar>
-					<p className="lowercase">
+					<p className="lowercase font-heading">
 						{user.username === "" || !user.username
 							? user.firstName
 							: user.username}
