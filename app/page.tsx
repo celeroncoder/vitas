@@ -3,6 +3,12 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Logo } from "@/components/logo";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+	title: "Home | get.id",
+	description: "Home page",
+};
 
 export default function Home() {
 	return (

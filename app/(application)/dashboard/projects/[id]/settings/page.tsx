@@ -11,10 +11,37 @@ import {
 import { Title } from "@/components/ui/title";
 import { UpdateProjectForm } from "@/components/update-project";
 import { service } from "@/service";
+import { Metadata } from "next";
+import { z } from "zod";
 
 type ProjectSettingsPageProps = {
 	params: { id: string };
 };
+
+export async function generateMetadata({
+	params,
+}: ProjectSettingsPageProps): Promise<Metadata> {
+	const parsedId = z.string().cuid().safeParse(params.id);
+
+	if (!parsedId.success)
+		return {
+			title: "Project Not Found | get.id",
+			description: "The Requested project couldn't be found.",
+		};
+
+	const project = await service.project.getOne(parsedId.data);
+
+	if (!project)
+		return {
+			title: "Project Not Found | get.id",
+			description: "The Requested project couldn't be found.",
+		};
+
+	return {
+		title: `Settings | Project "${project.name}" | get.id`,
+		description: `Settings for Project: "${project.displayName}" | URL: ${project.displayUrl}`,
+	};
+}
 
 export default async function ProjectSettingsPage({
 	params,
