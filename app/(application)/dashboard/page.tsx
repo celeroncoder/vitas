@@ -3,6 +3,12 @@ import { ProjectGrid } from "@/components/project-grid";
 import { Title } from "@/components/ui/title";
 import { service } from "@/service";
 import { auth } from "@clerk/nextjs";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+	title: "Dashboard | get.id",
+	description: "get.id Dashboard | Manage your projects",
+};
 
 export default async function Dashboard() {
 	const { userId } = auth();

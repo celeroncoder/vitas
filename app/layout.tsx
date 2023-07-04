@@ -5,11 +5,13 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { neobrutalism } from "@clerk/themes";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
+import { Metadata } from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
 	title: "get.id",
 	description: "Generate ID Cards for your Team",
 	icons: "/favicon.png",
+	robots: "index, follow",
 };
 
 export default function RootLayout({
