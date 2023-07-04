@@ -34,6 +34,11 @@ export async function generateMetadata({
 	return {
 		title: `Project "${project.name}" | get.id`,
 		description: `Project: "${project.displayName}" | URL: ${project.displayUrl}`,
+		openGraph: {
+			images: {
+				url: "/api/projects/og?name=" + project.displayName,
+			},
+		},
 	};
 }
 
