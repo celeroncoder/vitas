@@ -72,7 +72,7 @@ export const CreateProjectForm = () => {
 			return;
 		}
 
-		const res = await api.post("/projects/create", payload.data);
+		const res = await api.post("/projects", payload.data);
 		if (res.status == 201) {
 			toast({
 				title: `Project ${res.data.name} Created!`,
