@@ -20,11 +20,11 @@ export const space_mono = Space_Mono({
 	weight: "700",
 	variable: "--font-mono",
 	fallback: ["monospace"],
+	preload: true,
 });
 
 export const space_grotesk = Space_Grotesk({
 	subsets: ["latin"],
-	preload: false,
 	fallback: ["sans-serif"],
 	variable: "--font-primary",
 });
