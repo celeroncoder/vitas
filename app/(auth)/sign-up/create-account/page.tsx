@@ -1,4 +1,4 @@
-import { CreateAccount } from "@/components/create-account";
+import { CreateAccountForm } from "@/components/create-account";
 import { service } from "@/service";
 import { currentUser } from "@clerk/nextjs";
 
@@ -13,5 +13,5 @@ export default async function CreateAccountPage() {
 
 	if (account) redirect("/dashboard");
 
-	return <CreateAccount user={user} />;
+	return <CreateAccountForm id={user.id} />;
 }
