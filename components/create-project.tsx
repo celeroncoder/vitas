@@ -161,7 +161,7 @@ export const CreateProjectForm = () => {
 							)}
 						/>
 
-						<DialogFooter className="gap-1">
+						<DialogFooter className="gap-1 gap-y-2">
 							<Button
 								variant={"secondary"}
 								type="reset"
