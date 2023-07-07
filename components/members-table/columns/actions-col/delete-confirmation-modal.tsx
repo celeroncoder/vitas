@@ -31,7 +31,7 @@ export const DeleteConfirmationModal: React.FC<{
 
 	const deleteMember = async () => {
 		setBtnLoading(true);
-		const res = await api.delete(`/members/${member.id}/delete`);
+		const res = await api.delete(`/members/${member.id}`);
 
 		if (res.status === 200) {
 			// show done notification
