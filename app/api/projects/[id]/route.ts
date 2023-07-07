@@ -1,13 +1,6 @@
 import { ProjectUpdateProps } from "@/lib/validators";
 import { service } from "@/service";
-import { z } from "zod";
-
-const ProjectContext = z.object({
-	params: z.object({
-		id: z.string().cuid(),
-	}),
-});
-type ProjectContext = z.infer<typeof ProjectContext>;
+import { ProjectContext } from "./types";
 
 export async function GET(req: Request, context: ProjectContext) {
 	try {
