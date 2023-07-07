@@ -3,11 +3,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import favicon from "@/public/favicon.png";
 
-export const config = {
-	runtime: "edge",
-};
+export const runtime = "edge";
 
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: Request) {
 	try {
 		const projectName = new URL(req.url || "").searchParams.get("name");
 
@@ -41,7 +39,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 						}}
 						tw="border-t-2 border-lime-200 w-full flex items-center justify-center"
 					>
-						<div tw="flex items-center justify-center leading-tight font-bold bg-lime-200 text-slate-900 px-4 py-1 rounded-lg max-h-fit">
+						<div tw="flex items-center justify-center text-lg leading-tight font-bold bg-lime-200 text-slate-900 px-4 py-1 rounded-lg">
 							<img
 								src={`${
 									process.env.NODE_ENV === "development"
