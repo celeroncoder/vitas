@@ -47,7 +47,7 @@ export function DeleteConfirmationModal<TData>({
 
 		const res = await api.post("/members/deleteMany", payload);
 
-		if (res.status === 204) {
+		if (res.status === 200) {
 			toast({
 				title: "Selected Members Deleted",
 				description: "The selected Members were deleted successfully!",
