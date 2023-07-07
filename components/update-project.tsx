@@ -42,35 +42,46 @@ export const UpdateProjectForm: React.FC<{ project: Project }> = ({
 	const { toast } = useToast();
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		const parsedPayload = ProjectUpdateProps.safeParse(values);
+		try {
+			const parsedPayload = ProjectUpdateProps.safeParse(values);
 
-		if (!parsedPayload.success) {
+			if (!parsedPayload.success) {
+				toast({
+					title: "Some Error Occurred!",
+					description:
+						"Uh Oh! Some problem Occurred while creating the project",
+					variant: "destructive",
+				});
+				form.reset();
+				return;
+			}
+
+			const res = await api.put(`/projects/${project.id}`, values);
+
+			if (res.status == 200)
+				toast({
+					title: "Project Updated Successfully!",
+					description: `Project, "${values.name}" updated successfully!`,
+				});
+			else
+				toast({
+					title: "Some Error Occurred!",
+					description:
+						"Uh Oh! Some problem Occurred while creating the project",
+					variant: "destructive",
+				});
+		} catch (error) {
+			console.error("PROJECT UPDATE ERROR: ", error);
 			toast({
 				title: "Some Error Occurred!",
 				description: "Uh Oh! Some problem Occurred while creating the project",
 				variant: "destructive",
 			});
+		} finally {
 			form.reset();
-			return;
+			// TODO: Invalidate query here instead.
+			window.location.reload();
 		}
-
-		const res = await api.put(`/projects/${project.id}/update`, values);
-
-		if (res.status == 200)
-			toast({
-				title: "Project Updated Successfully!",
-				description: `Project, "${values.name}" updated successfully!`,
-			});
-		else
-			toast({
-				title: "Some Error Occurred!",
-				description: "Uh Oh! Some problem Occurred while creating the project",
-				variant: "destructive",
-			});
-
-		form.reset();
-		// TODO: Invalidate query here instead.
-		window.location.reload();
 	};
 
 	return (
