@@ -29,7 +29,7 @@ export async function GET(req: Request) {
 	return new Response(JSON.stringify(projects), { status: 200 });
 }
 
-// create account
+// create project
 export async function POST(req: Request) {
 	try {
 		const parsedBody = ProjectCreateProps.safeParse(await req.json());
