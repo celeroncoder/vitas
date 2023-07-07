@@ -76,7 +76,7 @@ export const AddMemberForm: React.FC<{ project: Project }> = ({ project }) => {
 		});
 
 		if (payload.success) {
-			const res = await api.post("/members/create", payload.data);
+			const res = await api.post("/members", payload.data);
 
 			if (res.status == 201) {
 				toast({
