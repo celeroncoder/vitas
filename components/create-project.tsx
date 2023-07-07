@@ -72,7 +72,7 @@ export const CreateProjectForm = () => {
 			return;
 		}
 
-		const res = await api.post("/projects/create", payload.data);
+		const res = await api.post("/projects", payload.data);
 		if (res.status == 201) {
 			toast({
 				title: `Project ${res.data.name} Created!`,
@@ -161,7 +161,7 @@ export const CreateProjectForm = () => {
 							)}
 						/>
 
-						<DialogFooter className="gap-1">
+						<DialogFooter className="gap-1 gap-y-2">
 							<Button
 								variant={"secondary"}
 								type="reset"
