@@ -33,7 +33,7 @@ export const DeleteConfirmationModal: React.FC<{
 		setBtnLoading(true);
 		const res = await api.delete(`/members/${member.id}/delete`);
 
-		if (res.status === 204) {
+		if (res.status === 200) {
 			// show done notification
 			toast({
 				title: "Member Deleted",

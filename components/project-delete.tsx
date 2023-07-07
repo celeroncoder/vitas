@@ -54,7 +54,7 @@ export const ProjectDeleteConfirmationForm: React.FC<{
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		const res = await api.delete(`/projects/${project.id}`);
 
-		if (res.status === 204 || 200) {
+		if (res.status === 200) {
 			toast({
 				title: "Project Deleted",
 				description: "The project was deleted successfully!",
