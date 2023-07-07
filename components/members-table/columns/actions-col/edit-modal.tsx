@@ -86,7 +86,7 @@ export const EditModalForm: React.FC<{
 		}
 
 		try {
-			const res = await api.put(`/members/${member.id}/update`, payload.data);
+			const res = await api.put(`/members/${member.id}`, payload.data);
 
 			if (res.status === 200) {
 				// show done notification
@@ -94,9 +94,6 @@ export const EditModalForm: React.FC<{
 					title: "Member Updated",
 					description: `Member, "${member.name}" updated successfully!`,
 				});
-
-				// TODO: replace this and invalidate the memeber-data-table data.
-				router.refresh();
 			} else {
 				toast({
 					title: "Uh Oh!",
@@ -112,10 +109,12 @@ export const EditModalForm: React.FC<{
 					"There was some problem updating the member, Please try again after some time.",
 				variant: "destructive",
 			});
+		} finally {
+			form.reset();
+			router.refresh();
+			setOpen(false);
+			// TODO: replace this and invalidate the memeber-data-table data.
 		}
-
-		form.reset();
-		setOpen(false);
 	};
 
 	return (
