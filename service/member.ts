@@ -5,9 +5,8 @@ import {
 	MemberCreateProps,
 	MemberUpdateProps,
 } from "@/lib/validators";
-import { getAuth } from "@clerk/nextjs/server";
-import type { Member, Prisma } from "@prisma/client";
-import { NextApiRequest } from "next";
+import { currentUser } from "@clerk/nextjs/server";
+import type { Member } from "@prisma/client";
 import { z } from "zod";
 import { service } from ".";
 import { knock } from "@/lib/knock";
@@ -94,7 +93,7 @@ const deleteMany = async (ids: number[]): Promise<[boolean, unknown]> => {
 	}
 };
 
-export const sendEmail = async (id: Member["id"], req: NextApiRequest) => {
+export const sendEmail = async (id: Member["id"]) => {
 	try {
 		const member = await getOne(id);
 		if (!member) return [false, new Error("Member not found.")];
@@ -102,13 +101,13 @@ export const sendEmail = async (id: Member["id"], req: NextApiRequest) => {
 		const project = await service.project.getOne(member.projectId);
 		if (!project) return [false, new Error("Project not found.")];
 
-		const auth = getAuth(req);
+		const user = await currentUser();
 
-		if (auth.userId !== project.userId)
-			return [false, new Error("Unauthorized.")];
+		if (!user) return [false, new Error("Unauthorized.")];
 
-		const projectOwnerName =
-			auth?.user?.firstName || auth?.user?.username || "Anonymous";
+		if (user.id !== project.userId) return [false, new Error("Unauthorized.")];
+
+		const projectOwnerName = user.firstName || user.username || "Anonymous";
 
 		const props: CardEmailSendData = {
 			cardUrl: `${getBaseUrl()}/card/${member.id}`,
