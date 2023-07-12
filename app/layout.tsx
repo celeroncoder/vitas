@@ -6,6 +6,7 @@ import { neobrutalism } from "@clerk/themes";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import { Metadata } from "next";
+import { QueryProvider } from "@/components/query-provider";
 
 export const metadata: Metadata = {
 	title: "get.id",
@@ -42,7 +43,7 @@ export default function RootLayout({
 						enableSystem
 						storageKey="theme"
 					>
-						{children}
+						<QueryProvider>{children}</QueryProvider>
 						<Toaster />
 					</ThemeProvider>
 				</ClerkProvider>
