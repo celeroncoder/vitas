@@ -45,6 +45,7 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 
 const formSchema = z.object({
 	file: z.instanceof(File),
@@ -59,8 +60,17 @@ const formSchema = z.object({
 const reader = new FileReader();
 
 export const AddMembersCSVForm: React.FC<{ project: Project }> = ({
-	project,
+	project: initialProjectData,
 }) => {
+	const { data: project } = useQuery<Project>({
+		queryKey: ["project", initialProjectData.id],
+		async queryFn() {
+			const res = await api.get(`/projects/${initialProjectData.id}`);
+			return res.data;
+		},
+		initialData: initialProjectData,
+	});
+
 	const [open, setOpen] = useState(false);
 
 	const form = useForm<z.infer<typeof formSchema>>({

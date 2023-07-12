@@ -32,6 +32,7 @@ import { useToast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
 
 const DEFAULT_MEMBER_EMAIL = "user@example.com";
 
@@ -42,7 +43,18 @@ const formSchema = z.object({
 	email: z.string().default(DEFAULT_MEMBER_EMAIL),
 });
 
-export const AddMemberForm: React.FC<{ project: Project }> = ({ project }) => {
+export const AddMemberForm: React.FC<{ project: Project }> = ({
+	project: initialProjectData,
+}) => {
+	const { data: project } = useQuery<Project>({
+		queryKey: ["project", initialProjectData.id],
+		async queryFn() {
+			const res = await api.get(`/projects/${initialProjectData.id}`);
+			return res.data;
+		},
+		initialData: initialProjectData,
+	});
+
 	const router = useRouter();
 	const [open, setOpen] = useState(false);
 

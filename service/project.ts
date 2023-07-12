@@ -22,7 +22,7 @@ async function getOne(id: string): Promise<Project | null> {
 }
 
 async function create(
-	project: z.infer<typeof ProjectCreateProps>
+	project: ProjectCreateProps
 ): Promise<[boolean, Project | unknown]> {
 	try {
 		return [

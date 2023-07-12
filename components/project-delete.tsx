@@ -31,10 +31,21 @@ import { z } from "zod";
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/lib/react-query";
 
 export const ProjectDeleteConfirmationForm: React.FC<{
 	project: Project;
-}> = ({ project }) => {
+}> = ({ project: initialProjectData }) => {
+	const { data: project } = useQuery<Project>({
+		queryKey: ["project", initialProjectData.id],
+		async queryFn() {
+			const res = await api.get(`/projects/${initialProjectData.id}`);
+			return res.data;
+		},
+		initialData: initialProjectData,
+	});
+
 	const [open, setOpen] = useState(false);
 
 	const formSchema = z.object({
@@ -51,10 +62,26 @@ export const ProjectDeleteConfirmationForm: React.FC<{
 	const { toast } = useToast();
 	const router = useRouter();
 
-	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		const res = await api.delete(`/projects/${project.id}`);
+	const { mutateAsync } = useMutation<boolean>({
+		async mutationFn() {
+			try {
+				await api.delete(`/projects/${project.id}`);
+				return true;
+			} catch (error) {
+				console.error(error);
+				return false;
+			}
+		},
+		onSuccess(data) {
+			queryClient.invalidateQueries({ queryKey: ["projects"] });
+			router.push("/dashboard");
+		},
+	});
 
-		if (res.status === 200) {
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		const res = await mutateAsync();
+
+		if (res) {
 			toast({
 				title: "Project Deleted",
 				description: "The project was deleted successfully!",
@@ -67,7 +94,6 @@ export const ProjectDeleteConfirmationForm: React.FC<{
 			});
 
 		setOpen(false);
-		router.push("/dashboard");
 	};
 
 	return (
@@ -103,7 +129,10 @@ export const ProjectDeleteConfirmationForm: React.FC<{
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Type the project name to confirm.</FormLabel>
+									<FormLabel>
+										Type the project name i.e. <code>"{project.name}"</code> to
+										confirm.
+									</FormLabel>
 									<FormControl>
 										<Input placeholder={project.name} {...field} />
 									</FormControl>

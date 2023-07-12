@@ -1,3 +1,5 @@
+"use client";
+
 import { Project } from "@prisma/client";
 import {
 	Card,
@@ -10,6 +12,8 @@ import { buttonVariants } from "./ui/button";
 import Link from "next/link";
 import React from "react";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/axios";
 
 const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
 	return (
@@ -35,9 +39,22 @@ const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
 export const ProjectGrid: React.FC<{ projects: Project[] }> = ({
 	projects,
 }) => {
+	const { data, isLoading } = useQuery<Array<Project>>({
+		queryKey: ["projects"],
+		async queryFn() {
+			const res = await api.get("/projects");
+			return res.data;
+		},
+		initialData: projects,
+	});
+
+	if (isLoading) {
+		return <div>Loading...</div>;
+	}
+
 	return (
 		<div className="flex items-center gap-4 px-4 flex-wrap mb-4">
-			{projects.map((project) => (
+			{data.map((project) => (
 				<ProjectCard key={project.id} project={project} />
 			))}
 		</div>

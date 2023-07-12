@@ -20,6 +20,8 @@ import { ShadowNoneIcon } from "@radix-ui/react-icons";
 import { CardFooter } from "./ui/card";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/lib/react-query";
 
 const formSchema = z.object({
 	name: z.string().min(3),
@@ -28,8 +30,17 @@ const formSchema = z.object({
 });
 
 export const UpdateProjectForm: React.FC<{ project: Project }> = ({
-	project,
+	project: initialProjectData,
 }) => {
+	const { data: project } = useQuery<Project>({
+		queryKey: ["project", initialProjectData.id],
+		async queryFn() {
+			const res = await api.get(`/projects/${initialProjectData.id}`);
+			return res.data;
+		},
+		initialData: initialProjectData,
+	});
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -40,6 +51,22 @@ export const UpdateProjectForm: React.FC<{ project: Project }> = ({
 	});
 
 	const { toast } = useToast();
+
+	const { mutateAsync } = useMutation<Project, any, ProjectUpdateProps>({
+		async mutationFn(props) {
+			const res = await api.put(`/projects/${project.id}`, props);
+			return res.data;
+		},
+		onSuccess(data) {
+			queryClient.invalidateQueries({ queryKey: ["project", project.id] });
+			queryClient.invalidateQueries({ queryKey: ["projects"] });
+			form.reset({
+				displayName: data.displayName,
+				name: data.name,
+				displayUrl: data.displayUrl || undefined,
+			});
+		},
+	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		try {
@@ -56,12 +83,12 @@ export const UpdateProjectForm: React.FC<{ project: Project }> = ({
 				return;
 			}
 
-			const res = await api.put(`/projects/${project.id}`, values);
+			const res = await mutateAsync(parsedPayload.data);
 
-			if (res.status == 200)
+			if (res)
 				toast({
 					title: "Project Updated Successfully!",
-					description: `Project, "${values.name}" updated successfully!`,
+					description: `Project, "${res.name}" updated successfully!`,
 				});
 			else
 				toast({
@@ -77,10 +104,6 @@ export const UpdateProjectForm: React.FC<{ project: Project }> = ({
 				description: "Uh Oh! Some problem Occurred while creating the project",
 				variant: "destructive",
 			});
-		} finally {
-			form.reset();
-			// TODO: Invalidate query here instead.
-			window.location.reload();
 		}
 	};
 

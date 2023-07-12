@@ -3,10 +3,10 @@ import { AddMembersCSVForm } from "@/components/add-members-csv";
 import { MembersTable } from "@/components/members-table";
 import ProjectNotFoundPage from "@/components/project-not-found";
 import { Separator } from "@/components/ui/separator";
-import { Title } from "@/components/ui/title";
 import { service } from "@/service";
 import { Metadata } from "next";
 import { z } from "zod";
+import { ProjectDetails } from "../../../../../components/project-details";
 
 type ProjectPageProps = {
 	params: { id: string };
@@ -51,12 +51,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 	return (
 		<>
 			<div className="w-full flex flex-wrap gap-2 items-center justify-between pt-1 pb-4">
-				<div>
-					<p className="text-sm text-muted-foreground">
-						Project: "{project.name}"
-					</p>
-					<Title className="text-2xl">Your Members</Title>
-				</div>
+				<ProjectDetails project={project} />
 				<div className="flex items-center gap-2">
 					<AddMembersCSVForm project={project} />
 					<AddMemberForm project={project} />
