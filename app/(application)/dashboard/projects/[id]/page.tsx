@@ -58,7 +58,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 				</div>
 			</div>
 			<Separator />
-			<MembersTable members={members} />
+			<MembersTable members={members} projectId={project.id} />
 		</>
 	);
 }

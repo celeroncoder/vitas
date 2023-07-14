@@ -16,32 +16,42 @@ import { ShadowNoneIcon } from "@radix-ui/react-icons";
 
 import { useToast } from "@/components/ui/use-toast";
 import { api } from "@/lib/axios";
-import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/react-query";
 
 export const DeleteConfirmationModal: React.FC<{
 	member: Member;
 	open: boolean;
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ member, open, setOpen }) => {
-	const router = useRouter();
+	const { id } = useParams();
 	const { toast } = useToast();
 
 	const [btnLoading, setBtnLoading] = useState(false);
 
+	const { mutateAsync } = useMutation<boolean>({
+		async mutationFn() {
+			const res = await api.delete(`/members/${member.id}`);
+
+			return res.status === 200;
+		},
+		onSuccess() {
+			queryClient.invalidateQueries(["members", id]);
+		},
+	});
+
 	const deleteMember = async () => {
 		setBtnLoading(true);
-		const res = await api.delete(`/members/${member.id}`);
+		const res = await mutateAsync();
 
-		if (res.status === 200) {
+		if (res) {
 			// show done notification
 			toast({
 				title: "Member Deleted",
 				description: `Member, "${member.name}" removed form the project, successfully!`,
 			});
-
-			// TODO: replace this and invalidate the memeber-data-table data.
-			router.refresh();
 		} else {
 			toast({
 				title: "Uh Oh!",

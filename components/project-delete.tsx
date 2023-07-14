@@ -72,7 +72,7 @@ export const ProjectDeleteConfirmationForm: React.FC<{
 				return false;
 			}
 		},
-		onSuccess(data) {
+		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ["projects"] });
 			router.push("/dashboard");
 		},

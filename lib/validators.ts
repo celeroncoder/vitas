@@ -69,6 +69,8 @@ export const MemberCreateProps = z.object({
 	projectId: z.string(),
 });
 
+export type MemberCreateProps = z.infer<typeof MemberCreateProps>;
+
 export const MemberUpdateProps = z.object({
 	name: z.string().min(1),
 	username: z.string().min(1),

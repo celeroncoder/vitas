@@ -22,17 +22,17 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 
-import { Project } from "@prisma/client";
+import { Member, Project } from "@prisma/client";
 
 import { api } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "./ui/use-toast";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/lib/react-query";
 
 const DEFAULT_MEMBER_EMAIL = "user@example.com";
 
@@ -55,7 +55,6 @@ export const AddMemberForm: React.FC<{ project: Project }> = ({
 		initialData: initialProjectData,
 	});
 
-	const router = useRouter();
 	const [open, setOpen] = useState(false);
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -69,6 +68,16 @@ export const AddMemberForm: React.FC<{ project: Project }> = ({
 	});
 
 	const { toast } = useToast();
+
+	const { mutateAsync } = useMutation<Member, any, MemberCreateProps>({
+		async mutationFn(props) {
+			const res = await api.post("/members", props);
+			return res.data;
+		},
+		onSuccess() {
+			queryClient.invalidateQueries(["members", project.id]);
+		},
+	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		const processEmail = () => {
@@ -88,17 +97,13 @@ export const AddMemberForm: React.FC<{ project: Project }> = ({
 		});
 
 		if (payload.success) {
-			const res = await api.post("/members", payload.data);
+			const res = await mutateAsync(payload.data);
 
-			if (res.status == 201) {
+			if (res) {
 				toast({
-					title: `Member @${res.data.username} Added!`,
-					description: `${res.data.name} was added successfully!`,
+					title: `Member @${res.username} Added!`,
+					description: `${res.name} was added successfully!`,
 				});
-				setOpen(false);
-
-				// TODO: replace this to invalidate or refetch the data-table data.
-				router.refresh();
 			} else
 				toast({
 					title: "Some Error Occurred!",
@@ -112,6 +117,7 @@ export const AddMemberForm: React.FC<{ project: Project }> = ({
 			});
 		}
 
+		setOpen(false);
 		form.reset();
 	};
 

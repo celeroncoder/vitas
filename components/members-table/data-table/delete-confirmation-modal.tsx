@@ -18,10 +18,12 @@ import { useState } from "react";
 import { z } from "zod";
 import { api } from "@/lib/axios";
 import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ShadowNoneIcon, TrashIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/react-query";
 
 export type DeleteConfirmationModalProps<TData> = {
 	selectedRows: TData[];
@@ -34,20 +36,36 @@ export function DeleteConfirmationModal<TData>({
 	setRowSelection,
 	deleteSelectionDisabled,
 }: DeleteConfirmationModalProps<TData>) {
-	const router = useRouter();
+	const { id } = useParams();
 	const { toast } = useToast();
 
 	const [open, setOpen] = useState(false);
 	const [deleteBtnLoading, setDeleteBtnLoading] = useState(false);
+
+	const { mutateAsync } = useMutation<
+		boolean,
+		any,
+		z.infer<typeof MemberDeleteManyProps>
+	>({
+		async mutationFn(payload) {
+			const res = await api.post("/members/deleteMany", payload);
+
+			return res.status === 200;
+		},
+		onSuccess() {
+			queryClient.invalidateQueries(["members", id]);
+		},
+	});
+
 	const deleteSelectedRows = async () => {
 		setDeleteBtnLoading(true);
 		const payload: z.infer<typeof MemberDeleteManyProps> = {
 			ids: selectedRows.map((row) => (row as Member).id),
 		};
 
-		const res = await api.post("/members/deleteMany", payload);
+		const res = await mutateAsync(payload);
 
-		if (res.status === 200) {
+		if (res) {
 			toast({
 				title: "Selected Members Deleted",
 				description: "The selected Members were deleted successfully!",
@@ -62,7 +80,6 @@ export function DeleteConfirmationModal<TData>({
 		setDeleteBtnLoading(false);
 		setOpen(false);
 		setRowSelection({});
-		router.refresh();
 	};
 
 	return (

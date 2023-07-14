@@ -48,7 +48,6 @@ export const CreateProjectForm = () => {
 
 	const { userId } = useAuth();
 	const { toast } = useToast();
-	const router = useRouter();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
