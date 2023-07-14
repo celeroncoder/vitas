@@ -1,5 +1,5 @@
-import { SignUp } from "@clerk/nextjs";
+import { AuthCard } from "@/components/auth-card";
 
 export default function Page() {
-	return <SignUp afterSignUpUrl={"/sign-up/create-account"} />;
+	return <AuthCard type="sign-up" afterSignUpUrl="/sign-up/create-account" />;
 }

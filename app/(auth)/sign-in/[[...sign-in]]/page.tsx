@@ -1,5 +1,5 @@
-import { SignIn } from "@clerk/nextjs";
+import { AuthCard } from "@/components/auth-card";
 
 export default function Page() {
-	return <SignIn />;
+	return <AuthCard type="sign-in" />;
 }
