@@ -45,6 +45,8 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/lib/react-query";
 
 const formSchema = z.object({
 	file: z.instanceof(File),
@@ -59,8 +61,17 @@ const formSchema = z.object({
 const reader = new FileReader();
 
 export const AddMembersCSVForm: React.FC<{ project: Project }> = ({
-	project,
+	project: initialProjectData,
 }) => {
+	const { data: project } = useQuery<Project>({
+		queryKey: ["project", initialProjectData.id],
+		async queryFn() {
+			const res = await api.get(`/projects/${initialProjectData.id}`);
+			return res.data;
+		},
+		initialData: initialProjectData,
+	});
+
 	const [open, setOpen] = useState(false);
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -86,6 +97,20 @@ export const AddMembersCSVForm: React.FC<{ project: Project }> = ({
 		setCols(undefined);
 		setRows(undefined);
 	};
+
+	const { mutateAsync } = useMutation<
+		{ count: number },
+		any,
+		MemberCreateMultipleProps
+	>({
+		async mutationFn(payload) {
+			const res = await api.post("/members/createMany", payload);
+			return res.data;
+		},
+		onSuccess() {
+			queryClient.invalidateQueries(["members", project.id]);
+		},
+	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		if (rows && cols) {
@@ -115,11 +140,11 @@ export const AddMembersCSVForm: React.FC<{ project: Project }> = ({
 					projectId: project.id,
 				};
 
-				const res = await api.post("/members/createMany", payload);
+				const res = await mutateAsync(payload);
 
-				if (res.status == 201) {
+				if (res) {
 					toast({
-						title: `${res.data.count} Members Added!`,
+						title: `${res.count} Members Added!`,
 						description: `Members were added from the csv with the specified column mapping successfully!`,
 					});
 				} else
@@ -137,8 +162,6 @@ export const AddMembersCSVForm: React.FC<{ project: Project }> = ({
 			} finally {
 				reset();
 				setOpen(false);
-				// TODO: replace this to invalidate or refetch the data-table data.
-				router.refresh();
 			}
 		} else
 			toast({

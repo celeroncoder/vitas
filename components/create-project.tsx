@@ -33,6 +33,9 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { Project } from "@prisma/client";
+import { queryClient } from "@/lib/react-query";
 
 const formSchema = z.object({
 	name: z.string().min(3),
@@ -45,7 +48,6 @@ export const CreateProjectForm = () => {
 
 	const { userId } = useAuth();
 	const { toast } = useToast();
-	const router = useRouter();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -53,6 +55,16 @@ export const CreateProjectForm = () => {
 			name: "",
 			displayName: "",
 			displayUrl: "",
+		},
+	});
+
+	const { mutateAsync } = useMutation<Project, any, ProjectCreateProps>({
+		mutationFn: async (props) => {
+			const res = await api.post("/projects", props);
+			return res.data;
+		},
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ["projects"] });
 		},
 	});
 
@@ -72,11 +84,11 @@ export const CreateProjectForm = () => {
 			return;
 		}
 
-		const res = await api.post("/projects", payload.data);
-		if (res.status == 201) {
+		const res = await mutateAsync(payload.data);
+		if (res) {
 			toast({
-				title: `Project ${res.data.name} Created!`,
-				description: `Project ${res.data.name} with Display Name ${res.data.displayName} was created successfully!`,
+				title: `Project ${res.name} Created!`,
+				description: `Project ${res.name} with Display Name ${res.displayName} was created successfully!`,
 			});
 		} else
 			toast({
@@ -86,7 +98,6 @@ export const CreateProjectForm = () => {
 
 		form.reset();
 		setOpen(false);
-		router.refresh();
 	};
 
 	return (

@@ -22,13 +22,15 @@ import { ShadowNoneIcon } from "@radix-ui/react-icons";
 
 import { useToast } from "@/components/ui/use-toast";
 import { api } from "@/lib/axios";
-import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 import { MemberUpdateProps } from "@/lib/validators";
 import { Member } from "@prisma/client";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/react-query";
 
 const DEFAULT_MEMBER_EMAIL = "user@example.com";
 
@@ -44,7 +46,7 @@ export const EditModalForm: React.FC<{
 	open: boolean;
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ member, open, setOpen }) => {
-	const router = useRouter();
+	const { id } = useParams();
 	const { toast } = useToast();
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -54,6 +56,18 @@ export const EditModalForm: React.FC<{
 			username: member.username,
 			position: member.position,
 			email: member.email || DEFAULT_MEMBER_EMAIL,
+		},
+	});
+
+	const { mutateAsync } = useMutation<boolean, any, MemberUpdateProps>({
+		async mutationFn(payload) {
+			const res = await api.put(`/members/${member.id}`, payload);
+
+			return res.status == 200;
+		},
+
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ["members", id] });
 		},
 	});
 
@@ -86,9 +100,9 @@ export const EditModalForm: React.FC<{
 		}
 
 		try {
-			const res = await api.put(`/members/${member.id}`, payload.data);
+			const res = await mutateAsync(payload.data);
 
-			if (res.status === 200) {
+			if (res) {
 				// show done notification
 				toast({
 					title: "Member Updated",
@@ -111,9 +125,7 @@ export const EditModalForm: React.FC<{
 			});
 		} finally {
 			form.reset();
-			router.refresh();
 			setOpen(false);
-			// TODO: replace this and invalidate the memeber-data-table data.
 		}
 	};
 

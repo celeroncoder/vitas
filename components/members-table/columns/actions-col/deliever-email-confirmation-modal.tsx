@@ -16,25 +16,32 @@ import { ShadowNoneIcon } from "@radix-ui/react-icons";
 
 import { useToast } from "@/components/ui/use-toast";
 import { api } from "@/lib/axios";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 export const DelieverEmailConfirmationModal: React.FC<{
 	member: Member;
 	open: boolean;
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ member, open, setOpen }) => {
-	const router = useRouter();
 	const { toast } = useToast();
 
 	const [btnLoading, setBtnLoading] = useState(false);
 
+	const { mutateAsync } = useMutation<boolean>({
+		async mutationFn() {
+			const res = await api.post(`/members/${member.id.toString()}/email`);
+
+			return res.status == 200;
+		},
+	});
+
 	const sendEmail = async () => {
 		setBtnLoading(true);
 		try {
-			const res = await api.post(`/members/${member.id.toString()}/email`);
+			const res = await mutateAsync();
 
-			if (res.status == 200)
+			if (res)
 				toast({
 					title: "Email Sent",
 					description: `The Digital Card was successfully deliverd to ${member.name}'s email address.`,

@@ -33,12 +33,12 @@ export async function generateMetadata({
 	};
 }
 
-export default async function IDCardPage({ params }: ProjectIDCardPageProps) {
-	const project = await service.project.getOne(params.id);
-
+export default async function IDCardPage({
+	params: _,
+}: ProjectIDCardPageProps) {
 	const user = await currentUser();
 
-	if (!project || !user) return <ProjectNotFoundPage />;
+	if (!user) return <ProjectNotFoundPage />;
 
 	return (
 		<>

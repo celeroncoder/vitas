@@ -17,6 +17,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { api } from "@/lib/axios";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 export const DelieverEmailConfirmationModal: React.FC<{
 	open: boolean;
@@ -27,15 +28,23 @@ export const DelieverEmailConfirmationModal: React.FC<{
 
 	const [btnLoading, setBtnLoading] = useState(false);
 
+	const { mutateAsync } = useMutation<{ count: number }>({
+		async mutationFn() {
+			const res = await api.post(`/projects/${params?.id.toString()}/email`);
+
+			return { count: res.data.count };
+		},
+	});
+
 	const sendEmail = async () => {
 		setBtnLoading(true);
 		try {
-			const res = await api.post(`/projects/${params?.id.toString()}/email`);
+			const res = await mutateAsync();
 
-			if (res.status == 200)
+			if (res)
 				toast({
-					title: `(${res.data.count}) Emails Sent`,
-					description: `The Digital Cards were successfully deliverd to ${res.data.count} members.`,
+					title: `(${res.count}) Emails Sent`,
+					description: `The Digital Cards were successfully deliverd to ${res.count} members.`,
 				});
 		} catch (error) {
 			console.error(error);
