@@ -17,7 +17,7 @@ export const IDCardFront: React.FC<IDCardFrontProps> = ({
     <div className="relative overflow-hidden select-none bg-foreground text-background w-[552px] h-[368px] rounded-lg shadow-sm hover:shadow-lg hover:scale-105 duration-150 flex flex-col justify-between p-10">
       <div>
         <Title className="text-4xl">{name}</Title>
-        <p className="text-md">@{username}</p>
+        <p className="text-md">{username}</p>
       </div>
       <div className="text-muted-foreground">
         <p>{position}</p>

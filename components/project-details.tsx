@@ -6,23 +6,23 @@ import { Project } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 
 export function ProjectDetails({
-	project: initialProjectData,
+  project: initialProjectData,
 }: {
-	project: Project;
+  project: Project;
 }) {
-	const { data: project } = useQuery<Project>({
-		queryKey: ["project", initialProjectData.id],
-		async queryFn() {
-			const res = await api.get(`/projects/${initialProjectData.id}`);
-			return res.data;
-		},
-		initialData: initialProjectData,
-	});
+  const { data: project } = useQuery<Project>({
+    queryKey: ["project", initialProjectData.id],
+    async queryFn() {
+      const res = await api.get(`/projects/${initialProjectData.id}`);
+      return res.data;
+    },
+    initialData: initialProjectData,
+  });
 
-	return (
-		<div>
-			<p className="text-sm text-muted-foreground">Project: "{project.name}"</p>
-			<Title className="text-2xl">Your Members</Title>
-		</div>
-	);
+  return (
+    <div>
+      <p className="text-sm text-muted-foreground">Event: "{project.name}"</p>
+      <Title className="text-2xl">Your Participants</Title>
+    </div>
+  );
 }

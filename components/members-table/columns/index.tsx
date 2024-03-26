@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "../../ui/checkbox";
 import { DataTableColumnHeader } from "../column-header";
 import { ActionsCol } from "./actions-col";
+import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<Member>[] = [
   {
@@ -39,16 +40,19 @@ export const columns: ColumnDef<Member>[] = [
   {
     accessorKey: "username",
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Username" />;
-    },
-    cell: ({ row }) => {
-      return `@${row.getValue("username")}`;
+      return (
+        <DataTableColumnHeader column={column} title="Registration Number" />
+      );
     },
   },
   {
     accessorKey: "position",
+    enableHiding: true,
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Position" />;
+    },
+    cell({ row }) {
+      return <Badge>{row.original.position}</Badge>;
     },
   },
 

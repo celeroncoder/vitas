@@ -9,45 +9,45 @@ import { Metadata } from "next";
 import { QueryProvider } from "@/components/query-provider";
 
 export const metadata: Metadata = {
-	title: "get.id",
-	description: "Generate ID Cards for your Team",
-	icons: "/favicon.png",
-	robots: "index, follow",
+  title: "VITAS",
+  description: "Virtual Inter-Academia Ticket Allocation System",
+  icons: "/favicon.png",
+  robots: "index, follow",
 };
 
 export default function RootLayout({
-	children,
+  children,
 }: {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-	return (
-		<html lang="en" suppressHydrationWarning>
-			<body
-				className={cn(
-					"scrollbar-thin scrollbar-thumb-rounded-sm scrollbar-thumb-lime-200/75 scrollbar-track-background scroll-smooth",
-					general_sans.variable,
-					satoshi.variable,
-					space_mono.variable,
-					space_grotesk.variable
-				)}
-			>
-				<ClerkProvider
-					appearance={{
-						baseTheme: neobrutalism,
-						variables: { colorPrimary: "#a3e635" },
-					}}
-				>
-					<ThemeProvider
-						attribute="class"
-						defaultTheme="system"
-						enableSystem
-						storageKey="theme"
-					>
-						<QueryProvider>{children}</QueryProvider>
-						<Toaster />
-					</ThemeProvider>
-				</ClerkProvider>
-			</body>
-		</html>
-	);
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={cn(
+          "scrollbar-thin scrollbar-thumb-rounded-sm scrollbar-thumb-lime-200/75 scrollbar-track-background scroll-smooth",
+          general_sans.variable,
+          satoshi.variable,
+          space_mono.variable,
+          space_grotesk.variable
+        )}
+      >
+        <ClerkProvider
+          appearance={{
+            baseTheme: neobrutalism,
+            variables: { colorPrimary: "#a3e635" },
+          }}
+        >
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            storageKey="theme"
+          >
+            <QueryProvider>{children}</QueryProvider>
+            <Toaster />
+          </ThemeProvider>
+        </ClerkProvider>
+      </body>
+    </html>
+  );
 }

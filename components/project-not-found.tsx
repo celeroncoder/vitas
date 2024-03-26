@@ -9,7 +9,7 @@ export default function ProjectNotFoundPage() {
           href="/dashboard"
           className="underline underline-offset-2 text-lime-400"
         >
-          see all projects
+          see all events
         </Link>
         .
       </h1>
