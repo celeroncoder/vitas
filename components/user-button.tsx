@@ -83,7 +83,7 @@ export const UserDropdownMenu = () => {
         <DropdownMenuSeparator />
         <Link
           passHref
-          href="https://github.com/VITASxPE/vitas-main"
+          href="https://github.com/celeroncoder/vitas"
           target="_blank"
         >
           <DropdownMenuItem>
