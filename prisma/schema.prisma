@@ -29,6 +29,12 @@ model Project {
   displayName String
   displayUrl  String?
 
+  bannerImageUrl String?
+  fee            Int     @default(0)
+
+  from DateTime?
+  to   DateTime?
+
   members Member[]
 }
 
