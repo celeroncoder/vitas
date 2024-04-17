@@ -1,26 +1,70 @@
-import Link from "next/link";
-import { ChevronRightIcon } from "@radix-ui/react-icons";
-import { Logo } from "@/components/logo";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { Metadata } from "next";
+import { service } from "@/service";
+import { currentUser } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { ExternalLinkIcon, Link1Icon, Link2Icon } from "@radix-ui/react-icons";
+import { format } from "date-fns";
 
 export const metadata: Metadata = {
   title: "Home | VITAS",
   description: "Home page",
 };
 
-export default function Home() {
+export default async function Home() {
+  const user = await currentUser();
+
+  const projects = await service.project.getAll();
+
   return (
-    <main className="min-h-screen w-full flex flex-col gap-2 items-center justify-center select-none py-2 px-4">
-      <Logo />
-      <Link
-        href="/dashboard"
-        className={cn(buttonVariants({ size: "lg" }), "group")}
-      >
-        Go To Dashboard{" "}
-        <ChevronRightIcon className="w-4 ml-2 group-hover:translate-x-1 duration-300" />
-      </Link>
+    <main className="min-h-screen w-full">
+      <header className="h-16 border-b-2 border-b-foreground flex items-center justify-between px-6">
+        <p className="font-bold font-mono select-none text-lg">VITAS</p>
+
+        <Button variant={"outline"}>
+          {!user ? "Sign In" : "Create Event?"}
+        </Button>
+      </header>
+
+      <section className="flex items-start justify-start w-full p-10 h-[80vh] gap-4">
+        {projects.map((project) => (
+          <Card>
+            <CardHeader className="relative">
+              <img
+                src={project.bannerImageUrl || "/alt-image-banner.jpeg"}
+                alt=""
+                className="h-44 w-80 min-w-full rounded"
+              />
+
+              {project.from && (
+                <p className="absolute bg-gray-600 text-background font-bold rounded left-8 text-center p-2 text-xs">
+                  {format(project.from, "d")}
+                  <br />
+                  {format(project.from, "MMM")}
+                </p>
+              )}
+            </CardHeader>
+
+            <CardContent>
+              <p>{project.displayName}</p>
+              <p className="text-muted-foreground underline underline-offset-4">
+                {project.displayUrl}
+                <ExternalLinkIcon className="w-3 inline ml-1 cursor-pointer" />
+              </p>
+            </CardContent>
+
+            <CardFooter className="flex items-center justify-end">
+              <Button size="sm">Register</Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </section>
     </main>
   );
 }

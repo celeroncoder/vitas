@@ -13,7 +13,11 @@ import { currentUser, getAuth } from "@clerk/nextjs/server";
 import { TriggerWorkflowProperties } from "@knocklabs/node";
 import { knock } from "@/lib/knock";
 
-async function getAll(userId: string): Promise<Project[]> {
+async function getAll(): Promise<Project[]> {
+  return await prisma.project.findMany();
+}
+
+async function getAllByUserId(userId: string): Promise<Project[]> {
   return await prisma.project.findMany({ where: { userId } });
 }
 
@@ -120,6 +124,7 @@ const sendEmail = async (id: string) => {
 
 export const project = {
   getAll,
+  getAllByUserId,
   create,
   update,
   getOne,
