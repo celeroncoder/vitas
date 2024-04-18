@@ -1,6 +1,6 @@
 import { ProjectCreateProps } from "@/lib/validators";
 import { service } from "@/service";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 
 // get all user's projects
 export async function GET(req: Request) {

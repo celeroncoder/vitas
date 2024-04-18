@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { service } from "@/service";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { ExternalLinkIcon, Link1Icon, Link2Icon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Home | VITAS",
@@ -27,9 +28,11 @@ export default async function Home() {
       <header className="h-16 border-b-2 border-b-foreground flex items-center justify-between px-6">
         <p className="font-bold font-mono select-none text-lg">VITAS</p>
 
-        <Button variant={"outline"}>
-          {!user ? "Sign In" : "Create Event?"}
-        </Button>
+        <Link href={"/dashboard"}>
+          <Button variant={"outline"}>
+            {!user ? "Sign In" : "Create Event?"}
+          </Button>
+        </Link>
       </header>
 
       <section className="flex items-start justify-start w-full p-10 h-[80vh] gap-4">

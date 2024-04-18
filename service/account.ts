@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { AccountCreateProps, AccountUpdateData } from "@/lib/validators";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import { User } from "@clerk/nextjs/dist/types/server";
 import { Account } from "@prisma/client";
 import { z } from "zod";
