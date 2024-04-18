@@ -2,7 +2,7 @@ import { IDCardFlip } from "@/components/idcard";
 import ProjectNotFoundPage from "@/components/project-not-found";
 import { Title } from "@/components/ui/title";
 import { service } from "@/service";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 
 type ProjectIDCardPageProps = {
   params: { id: string };

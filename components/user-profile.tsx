@@ -9,6 +9,7 @@ export const UserProfile = () => {
   return (
     <ClerkUserProfile
       appearance={{ baseTheme: theme.theme === "dark" ? dark : undefined }}
+      routing="hash"
     />
   );
 };

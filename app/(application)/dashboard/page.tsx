@@ -2,7 +2,7 @@ import { CreateProjectForm } from "@/components/create-project";
 import { ProjectGrid } from "@/components/project-grid";
 import { Title } from "@/components/ui/title";
 import { service } from "@/service";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

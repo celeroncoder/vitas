@@ -2,7 +2,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { general_sans, satoshi, space_grotesk, space_mono } from "@/lib/fonts";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { neobrutalism } from "@clerk/themes";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import { Metadata } from "next";
@@ -33,7 +32,7 @@ export default function RootLayout({
       >
         <ClerkProvider
           appearance={{
-            baseTheme: neobrutalism,
+            // baseTheme: neobrutalism,
             variables: { colorPrimary: "#a3e635" },
           }}
         >
