@@ -56,10 +56,15 @@ export default async function Home() {
 
             <CardContent>
               <p>{project.displayName}</p>
-              <p className="text-muted-foreground underline underline-offset-4">
-                {project.displayUrl}
-                <ExternalLinkIcon className="w-3 inline ml-1 cursor-pointer" />
-              </p>
+
+              {project.displayUrl && (
+                <p className="text-muted-foreground underline underline-offset-4">
+                  {project.displayUrl}
+                  <Link href={project.displayUrl} target="__blank">
+                    <ExternalLinkIcon className="w-3 inline ml-1 cursor-pointer" />
+                  </Link>
+                </p>
+              )}
             </CardContent>
 
             <CardFooter className="flex items-center justify-end">
