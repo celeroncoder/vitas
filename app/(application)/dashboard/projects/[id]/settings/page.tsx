@@ -10,13 +10,17 @@ import {
 } from "@/components/ui/card";
 import { Title } from "@/components/ui/title";
 import { UpdateProjectForm } from "@/components/update-project";
+import { UploadBanner } from "@/components/uploadbanner";
 import { service } from "@/service";
+import { Project } from "@prisma/client";
 import { Metadata } from "next";
 import { z } from "zod";
 
 type ProjectSettingsPageProps = {
   params: { id: string };
 };
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -58,31 +62,59 @@ export default async function ProjectSettingsPage({
           Manage Event & Participant Settings
         </p>
       </div>
-      <Card className="shadow mb-2">
-        <CardHeader>
-          <CardTitle>Update Event</CardTitle>
-          <CardDescription>
-            Update the event details, these details will show up on the ID Card
-            also.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <UpdateProjectForm project={project} />
-        </CardContent>
-      </Card>
-      <Card className="shadow">
-        <CardHeader>
-          <CardTitle>Danger Zone</CardTitle>
-          <CardDescription>
-            This will permenentely delete the event and all the participants in
-            it. The ID Card from this event will no longer be valid.{" "}
-            <span className="font-semibold">This action is irreversible.</span>
-          </CardDescription>
-        </CardHeader>
-        <CardFooter className="justify-end">
-          <ProjectDeleteConfirmationForm project={project} />
-        </CardFooter>
-      </Card>
+
+      <ProjectUpdateCard project={project} />
+      <ProjectBannerUploadCard project={project} />
+      <ProjectDangerZoneCard project={project} />
     </>
   );
 }
+
+const ProjectBannerUploadCard = ({ project }: { project: Project }) => {
+  return (
+    <Card className="shadow mb-2">
+      <CardHeader>
+        <CardTitle>Upload Banner</CardTitle>
+        <CardDescription>Upload the event banner here...</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <UploadBanner project={project} />
+      </CardContent>
+    </Card>
+  );
+};
+
+const ProjectUpdateCard = ({ project }: { project: Project }) => {
+  return (
+    <Card className="shadow mb-2">
+      <CardHeader>
+        <CardTitle>Update Event</CardTitle>
+        <CardDescription>
+          Update the event details, these details will show up on the ID Card
+          also.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <UpdateProjectForm project={project} />
+      </CardContent>
+    </Card>
+  );
+};
+
+const ProjectDangerZoneCard = ({ project }: { project: Project }) => {
+  return (
+    <Card className="shadow">
+      <CardHeader>
+        <CardTitle>Danger Zone</CardTitle>
+        <CardDescription>
+          This will permenentely delete the event and all the participants in
+          it. The ID Card from this event will no longer be valid.{" "}
+          <span className="font-semibold">This action is irreversible.</span>
+        </CardDescription>
+      </CardHeader>
+      <CardFooter className="justify-end">
+        <ProjectDeleteConfirmationForm project={project} />
+      </CardFooter>
+    </Card>
+  );
+};

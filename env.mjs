@@ -8,6 +8,8 @@ export const env = createEnv({
     STRIPE_PREMIUM_PLAN_PRICE_ID: z.string(),
     STRIPE_WEBHOOK_SECRET: z.string(),
     KNOCK_API_KEY: z.string(),
+    UPLOADTHING_SECRET: z.string(),
+    UPLOADTHING_APP_ID: z.string(),
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
@@ -25,5 +27,7 @@ export const env = createEnv({
     STRIPE_PREMIUM_PLAN_PRICE_ID: process.env.STRIPE_PREMIUM_PLAN_PRICE_ID,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     KNOCK_API_KEY: process.env.KNOCK_API_KEY,
+    UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
+    UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
   },
 });

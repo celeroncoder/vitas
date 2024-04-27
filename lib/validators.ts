@@ -57,7 +57,7 @@ export const ProjectUpdateProps = z.object({
   displayName: z.string().min(3),
   displayUrl: z.string().optional(),
 
-  // bannerImageUrl: z.string().optional(),
+  bannerImageUrl: z.string().optional(),
   from: z.date().optional(),
   to: z.date().optional(),
   fee: z.number().optional(),
@@ -70,7 +70,7 @@ export const ProjectUpdateReqBody = z.object({
   displayName: z.string().min(3),
   displayUrl: z.string().optional(),
 
-  // bannerImageUrl: z.string().optional(),
+  bannerImageUrl: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
   fee: z.number().optional(),
