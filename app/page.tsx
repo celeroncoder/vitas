@@ -12,6 +12,7 @@ import {
 import { ExternalLinkIcon, Link1Icon, Link2Icon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import Link from "next/link";
+import { formatCurrency } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Home | VITAS",
@@ -56,19 +57,19 @@ export default async function Home() {
 
             <CardContent>
               <p>{project.displayName}</p>
-
-              {project.displayUrl && (
-                <p className="text-muted-foreground underline underline-offset-4">
-                  {project.displayUrl}
-                  <Link href={project.displayUrl} target="__blank">
-                    <ExternalLinkIcon className="w-3 inline ml-1 cursor-pointer" />
-                  </Link>
+              {project.fee && (
+                <p className="text-sm text-muted-foreground">
+                  Registration Fee: {formatCurrency(project.fee, "INR")}
                 </p>
               )}
             </CardContent>
 
             <CardFooter className="flex items-center justify-end">
-              <Button size="sm">Register</Button>
+              {project.displayUrl && (
+                <Link href={project.displayUrl} target="__blank">
+                  <Button size="sm">Register</Button>
+                </Link>
+              )}
             </CardFooter>
           </Card>
         ))}

@@ -48,3 +48,17 @@ export function getBaseUrl() {
 
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 }
+
+export function formatCurrency(
+  value: number,
+  currency: string,
+  locale?: string,
+  options?: Intl.NumberFormatOptions
+): string {
+  const formatter = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    ...options,
+  });
+  return formatter.format(value);
+}

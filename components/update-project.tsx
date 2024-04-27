@@ -160,12 +160,12 @@ export const UpdateProjectForm: React.FC<{ project: Project }> = ({
           name="displayUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Display Url</FormLabel>
+              <FormLabel>Registration Link</FormLabel>
               <FormControl>
                 <Input placeholder="acme.com" {...field} />
               </FormControl>
               <FormDescription className="text-sm">
-                This is your display url on the card.
+                This is your Registration Link for participants.
               </FormDescription>
               <FormMessage />
             </FormItem>
