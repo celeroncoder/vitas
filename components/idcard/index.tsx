@@ -19,10 +19,10 @@ export const IDCardFlip = () => {
           }}
         >
           <IDCardFront
-            name="Khushal Bhardwaj"
-            username="22BCE10691"
+            name="Sreya Nair"
+            username="22BCE11004"
             position="Participant"
-            projectDisplayName="FinGenAI"
+            projectDisplayName="GDSC"
           />
         </div>
 
@@ -33,7 +33,10 @@ export const IDCardFlip = () => {
             WebkitBackfaceVisibility: "hidden",
           }}
         >
-          <IDCardBack memberID="2342fa" projectDisplayURL="www.fintech.org" />
+          <IDCardBack
+            memberID="2342fa"
+            projectDisplayURL="www.gdscvitbhopal.com"
+          />
         </div>
       </div>
     </div>
